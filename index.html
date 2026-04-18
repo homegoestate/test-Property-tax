@@ -10,6 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script>
+        // 防盜拷腳本
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = e => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false;
+        };
+        document.ondragstart = () => false;
+    </script>
+
     <style>
         /* --- 全局設定 --- */
         body { 
@@ -17,6 +26,14 @@
             background-color: #f3f4f6;
             overflow-x: hidden;
             color: #1f2937;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        input, textarea {
+            -webkit-user-select: auto;
+            user-select: auto;
         }
 
         /* --- 動態背景光暈 (保留您喜歡的氛圍) --- */
@@ -108,6 +125,12 @@
         .btn-community { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
         .btn-yt { background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%); }
 
+        /* --- SSO 門禁系統專用動畫與樣式 --- */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        
+        .btn-line-solid { background-color: #06C755; color: white; transition: background-color 0.3s; border: none; }
+        .btn-line-solid:hover { background-color: #05b34c; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -118,207 +141,273 @@
 
 <div id="app" v-cloak class="w-full max-w-7xl mx-auto relative">
 
-    <header class="glass-panel rounded-2xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 border-l-8 border-blue-600">
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-700 to-blue-900 flex items-center justify-center text-white text-xl font-bold shadow-lg">宏</div>
-                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xl font-bold shadow-lg">易</div>
+    <transition name="fade">
+        <div v-if="!isUnlocked" class="min-h-screen flex flex-col items-center justify-center p-6 text-white fixed inset-0 z-[9999]" style="background: linear-gradient(180deg, #0F2E46 0%, #162a3b 100%); margin: -1rem md:-2rem;">
+            <div class="bg-white text-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center transform transition-all relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#C5A065] opacity-10 rounded-full blur-2xl"></div>
+                <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-[#C5A065] shadow-inner">
+                    <i class="fas fa-shield-alt text-3xl text-[#C5A065]"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-[#0F2E46] mb-2">宏國專屬試算系統</h2>
+                <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+                    本系統為宏國地政內部高階工具。<br>為保障服務品質，請透過官方帳號驗證身分。
+                </p>
+                <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 font-bold flex items-start gap-2 text-left">
+                    <i class="fas fa-exclamation-circle mt-0.5"></i>
+                    <span>{{ errorMessage }}</span>
+                </div>
+                <button @click="loginWithLine" class="w-full btn-line-solid rounded-xl py-4 flex items-center justify-center font-bold text-base shadow-lg transform transition active:scale-95 hover:shadow-xl">
+                    <i class="fab fa-line text-2xl mr-2"></i> 使用 LINE 登入並解鎖
+                </button>
+                <div class="text-[10px] text-gray-400 mt-4">
+                    <i class="fas fa-lock mr-1"></i> 經由 LINE OAuth 2.0 安全授權
+                </div>
             </div>
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight">
-                    宏國地政 <span class="text-gray-300 mx-1">|</span> 易丞地政
-                </h1>
-                <p class="text-gray-500 text-sm font-medium tracking-wide">專業代書團隊 ・ 不動產稅務權威</p>
-            </div>
+            <div class="mt-8 text-xs text-blue-200 opacity-60 tracking-widest">© 2026 宏國地政 | 易丞地政</div>
         </div>
+    </transition>
 
-        <div class="text-center md:text-right">
-            <h2 class="text-xl font-bold text-blue-700">房地合一稅 2.0 旗艦精算</h2>
-            <div class="flex items-center justify-center md:justify-end gap-2 mt-1">
-                <span class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-700 border border-green-200">2026 最新版</span>
-                <span class="px-2 py-0.5 rounded text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">AI 節稅運算</span>
+    <div v-if="isUnlocked">
+        <header class="glass-panel rounded-2xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 border-l-8 border-blue-600">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-700 to-blue-900 flex items-center justify-center text-white text-xl font-bold shadow-lg">宏</div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xl font-bold shadow-lg">易</div>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight">
+                        宏國地政 <span class="text-gray-300 mx-1">|</span> 易丞地政
+                    </h1>
+                    <p class="text-gray-500 text-sm font-medium tracking-wide">專業代書團隊 ・ 不動產稅務權威</p>
+                </div>
             </div>
-        </div>
-    </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        <div class="lg:col-span-8 space-y-6">
+            <div class="text-center md:text-right">
+                <h2 class="text-xl font-bold text-blue-700">房地合一稅 2.0 旗艦精算</h2>
+                <div class="flex items-center justify-center md:justify-end gap-2 mt-1">
+                    <span class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-700 border border-green-200">2026 最新版</span>
+                    <span class="px-2 py-0.5 rounded text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">AI 節稅運算</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden group">
-                <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
-                <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">1</span>
-                    交易價格資訊
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">售出價格 (總價)</label>
-                        <div class="relative">
-                            <input type="number" v-model.number="sellPrice" class="custom-input" placeholder="例如：2500">
-                            <span class="unit-tag">萬元</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">取得成本 (買價)</label>
-                        <div class="relative">
-                            <input type="number" v-model.number="buyPrice" class="custom-input" placeholder="例如：1800">
-                            <span class="unit-tag">萬元</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-sm">2</span>
-                    成本與費用扣除
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">取得必要費用</label>
-                        <div class="relative">
-                            <input type="number" v-model.number="acquireExpense" class="custom-input" placeholder="0">
-                            <span class="unit-tag">萬元</span>
-                        </div>
-                        <p class="text-xs text-gray-400 mt-1">契稅、仲介費等 (需憑據)</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">出售必要費用</label>
-                        <div class="relative">
-                            <input type="number" v-model.number="sellExpense" class="custom-input" placeholder="自動計算 3%">
-                            <span class="unit-tag">萬元</span>
-                        </div>
-                        <p class="text-xs text-blue-500 mt-1 font-medium">若未填寫，系統自動以 30 萬為上限擇優計算</p>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-blue-50 to-white p-4 rounded-xl border border-blue-100 flex flex-col md:flex-row items-center gap-4">
-                    <div class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
-                        <i class="fa-solid fa-landmark"></i>
-                    </div>
-                    <div class="flex-grow w-full">
-                        <label class="block text-sm font-bold text-blue-900 mb-1">土地漲價總數額 (依稅單)</label>
-                        <div class="relative">
-                            <input type="number" v-model.number="landValueIncrement" class="custom-input border-blue-200 focus:border-blue-500" placeholder="0">
-                            <span class="unit-tag text-blue-600">萬元</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-500"></div>
-                <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold text-sm">3</span>
-                    持有期間判定
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">取得日期</label>
-                        <input type="date" v-model="acquireDate" class="custom-input cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">出售日期</label>
-                        <input type="date" v-model="sellDate" class="custom-input cursor-pointer">
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
-            
-            <transition name="fade" mode="out-in">
-                <div v-if="isValid" class="glass-result-card rounded-3xl p-8 shadow-2xl">
-                    
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-overlay filter blur-[80px] opacity-20"></div>
-                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-500 rounded-full mix-blend-overlay filter blur-[60px] opacity-20"></div>
-                    
-                    <h3 class="text-xl font-bold text-gold mb-6 flex items-center gap-2 border-b border-white/10 pb-4 relative z-10">
-                        <i class="fa-solid fa-crown"></i> 試算結果分析
+            <div class="lg:col-span-8 space-y-6">
+                
+                <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">1</span>
+                        交易價格資訊
                     </h3>
-                    
-                    <div class="space-y-5 relative z-10">
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-300 text-sm">持有期間</span>
-                            <span class="font-bold text-white text-lg">{{ holdingPeriodText }}</span>
-                        </div>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-300 text-sm">適用稅率</span>
-                            <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">{{ taxRate }}%</span>
-                        </div>
-
-                        <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                            <span class="text-gray-300 text-sm">獲利所得</span>
-                            <span class="font-mono text-xl text-white">{{ formatCurrencyWan(profitWan) }}</span>
-                        </div>
-
-                        <div class="pt-2">
-                            <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">Estimated Tax</p>
-                            <p class="text-sm text-gray-300 mb-1">預估應納稅額</p>
-                            <div class="text-4xl font-bold text-green-400 font-mono tracking-tight text-shadow">
-                                {{ formatCurrency(taxAmountYuan) }}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">售出價格 (總價)</label>
+                            <div class="relative">
+                                <input type="number" v-model.number="sellPrice" class="custom-input" placeholder="例如：2500">
+                                <span class="unit-tag">萬元</span>
                             </div>
                         </div>
-
-                        <div class="mt-6 p-4 bg-white/10 rounded-xl border border-white/5 backdrop-blur-sm">
-                            <p class="text-xs text-gray-300 leading-relaxed">
-                                <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> 
-                                稅額過高？可能符合<span class="text-gold font-bold">「重購退稅」</span>或<span class="text-gold font-bold">「自用住宅免稅」</span>資格。建議諮詢代書確認是否能合法節稅。
-                            </p>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">取得成本 (買價)</label>
+                            <div class="relative">
+                                <input type="number" v-model.number="buyPrice" class="custom-input" placeholder="例如：1800">
+                                <span class="unit-tag">萬元</span>
+                            </div>
                         </div>
-
                     </div>
                 </div>
 
-                <div v-else class="glass-panel rounded-3xl p-8 text-center border-dashed border-2 border-gray-300 bg-white/50">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300 text-2xl shadow-sm">
-                        <i class="fa-solid fa-calculator"></i>
+                <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-sm">2</span>
+                        成本與費用扣除
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">取得必要費用</label>
+                            <div class="relative">
+                                <input type="number" v-model.number="acquireExpense" class="custom-input" placeholder="0">
+                                <span class="unit-tag">萬元</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">契稅、仲介費等 (需憑據)</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">出售必要費用</label>
+                            <div class="relative">
+                                <input type="number" v-model.number="sellExpense" class="custom-input" placeholder="自動計算 3%">
+                                <span class="unit-tag">萬元</span>
+                            </div>
+                            <p class="text-xs text-blue-500 mt-1 font-medium">若未填寫，系統自動以 30 萬為上限擇優計算</p>
+                        </div>
                     </div>
-                    <p class="text-gray-500 font-medium">請完成左側資料填寫<br>系統將即時為您試算</p>
+                    <div class="bg-gradient-to-r from-blue-50 to-white p-4 rounded-xl border border-blue-100 flex flex-col md:flex-row items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
+                            <i class="fa-solid fa-landmark"></i>
+                        </div>
+                        <div class="flex-grow w-full">
+                            <label class="block text-sm font-bold text-blue-900 mb-1">土地漲價總數額 (依稅單)</label>
+                            <div class="relative">
+                                <input type="number" v-model.number="landValueIncrement" class="custom-input border-blue-200 focus:border-blue-500" placeholder="0">
+                                <span class="unit-tag text-blue-600">萬元</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </transition>
 
-            <div class="glass-panel rounded-2xl p-6">
-                <h3 class="text-center font-bold text-gray-800 mb-4 text-sm tracking-wider">專業稅務諮詢與新知</h3>
-                
-                <div class="space-y-3">
-                    <a href="https://lin.ee/iOE3Dtd" target="_blank" class="btn-base btn-line">
-                        <i class="fa-brands fa-line text-2xl mr-3"></i>
-                        <span>加入官方 Line 諮詢</span>
-                    </a>
-
-                    <a href="https://line.me/ti/g2/aVklWxyLP1RtfstQsslGQOlP4KViuFI7PPucdQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="btn-base btn-community">
-                        <i class="fa-solid fa-users text-xl mr-3"></i>
-                        <span>加入房市法規社群</span>
-                    </a>
-
-                    <a href="https://www.youtube.com/@ycl_real_estate8888" target="_blank" class="btn-base btn-yt">
-                        <i class="fa-brands fa-youtube text-2xl mr-3"></i>
-                        <span>訂閱 YouTube 頻道</span>
-                    </a>
+                <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-500"></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold text-sm">3</span>
+                        持有期間判定
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">取得日期</label>
+                            <input type="date" v-model="acquireDate" class="custom-input cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">出售日期</label>
+                            <input type="date" v-model="sellDate" class="custom-input cursor-pointer">
+                        </div>
+                    </div>
                 </div>
+
             </div>
 
-            <footer class="mt-8 text-center text-gray-400 text-xs pb-4">
-                © 2026 宏國地政｜易丞地政士事務所 All Rights Reserved.<br>
-                本工具試算結果僅供參考，實際稅額以國稅局核定為準。
-            </footer>
+            <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
+                
+                <transition name="fade" mode="out-in">
+                    <div v-if="isValid" class="glass-result-card rounded-3xl p-8 shadow-2xl">
+                        
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-overlay filter blur-[80px] opacity-20"></div>
+                        <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-500 rounded-full mix-blend-overlay filter blur-[60px] opacity-20"></div>
+                        
+                        <h3 class="text-xl font-bold text-gold mb-6 flex items-center gap-2 border-b border-white/10 pb-4 relative z-10">
+                            <i class="fa-solid fa-crown"></i> 試算結果分析
+                        </h3>
+                        
+                        <div class="space-y-5 relative z-10">
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300 text-sm">持有期間</span>
+                                <span class="font-bold text-white text-lg">{{ holdingPeriodText }}</span>
+                            </div>
 
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300 text-sm">適用稅率</span>
+                                <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">{{ taxRate }}%</span>
+                            </div>
+
+                            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                                <span class="text-gray-300 text-sm">獲利所得</span>
+                                <span class="font-mono text-xl text-white">{{ formatCurrencyWan(profitWan) }}</span>
+                            </div>
+
+                            <div class="pt-2">
+                                <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">Estimated Tax</p>
+                                <p class="text-sm text-gray-300 mb-1">預估應納稅額</p>
+                                <div class="text-4xl font-bold text-green-400 font-mono tracking-tight text-shadow">
+                                    {{ formatCurrency(taxAmountYuan) }}
+                                </div>
+                            </div>
+
+                            <div class="mt-6 p-4 bg-white/10 rounded-xl border border-white/5 backdrop-blur-sm">
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> 
+                                    稅額過高？可能符合<span class="text-gold font-bold">「重購退稅」</span>或<span class="text-gold font-bold">「自用住宅免稅」</span>資格。建議諮詢代書確認是否能合法節稅。
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div v-else class="glass-panel rounded-3xl p-8 text-center border-dashed border-2 border-gray-300 bg-white/50">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300 text-2xl shadow-sm">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">請完成左側資料填寫<br>系統將即時為您試算</p>
+                    </div>
+                </transition>
+
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-center font-bold text-gray-800 mb-4 text-sm tracking-wider">專業稅務諮詢與新知</h3>
+                    
+                    <div class="space-y-3">
+                        <a href="https://lin.ee/iOE3Dtd" target="_blank" class="btn-base btn-line">
+                            <i class="fa-brands fa-line text-2xl mr-3"></i>
+                            <span>加入官方 Line 諮詢</span>
+                        </a>
+
+                        <a href="https://line.me/ti/g2/aVklWxyLP1RtfstQsslGQOlP4KViuFI7PPucdQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="btn-base btn-community">
+                            <i class="fa-solid fa-users text-xl mr-3"></i>
+                            <span>加入房市法規社群</span>
+                        </a>
+
+                        <a href="https://www.youtube.com/@ycl_real_estate8888" target="_blank" class="btn-base btn-yt">
+                            <i class="fa-brands fa-youtube text-2xl mr-3"></i>
+                            <span>訂閱 YouTube 頻道</span>
+                        </a>
+                    </div>
+                </div>
+
+                <footer class="mt-8 text-center text-gray-400 text-xs pb-4">
+                    © 2026 宏國地政｜易丞地政士事務所 All Rights Reserved.<br>
+                    本工具試算結果僅供參考，實際稅額以國稅局核定為準。
+                </footer>
+
+            </div>
         </div>
-    </div>
 
+    </div>
 </div>
 
 <script>
-    const { createApp, ref, computed } = Vue;
+    const { createApp, ref, computed, onMounted } = Vue;
 
     createApp({
         setup() {
-            // --- 核心資料 ---
+            // ==========================================
+            // 🛡️ Nexus SSO 企業級門禁邏輯
+            // ==========================================
+            const isUnlocked = ref(false);
+            const errorMessage = ref("");
+            
+            // 🔴 鎖定您的專屬大腦網址
+            const gasAuthUrl = "https://script.google.com/macros/s/AKfycbwiIbmZWvNkOZW1wPBSZT1b5MKcfeeU8LtfqOiPZE0gN0VPkxJDguhKmb6rTJnSWWBnCA/exec";
+
+            onMounted(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const authStatus = urlParams.get('nexus_auth');
+
+                if (authStatus === 'success') {
+                    localStorage.setItem('hg_line_auth', 'true');
+                    isUnlocked.value = true;
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } 
+                else if (authStatus === 'failed_not_friend') {
+                    localStorage.removeItem('hg_line_auth');
+                    isUnlocked.value = false;
+                    errorMessage.value = "授權失敗：系統偵測到您尚未加入好友或已封鎖官方帳號。請重新登入並務必勾選加入好友。";
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } 
+                else {
+                    if (localStorage.getItem('hg_line_auth') === 'true') {
+                        isUnlocked.value = true;
+                    }
+                }
+            });
+
+            const loginWithLine = () => {
+                const currentBaseUrl = window.location.origin + window.location.pathname;
+                window.location.href = `${gasAuthUrl}?state=${encodeURIComponent(currentBaseUrl)}`;
+            };
+
+            // ==========================================
+            // 🌟 房地合一稅計算核心邏輯 (維持原樣)
+            // ==========================================
             const sellPrice = ref(null);
             const buyPrice = ref(null);
             const acquireDate = ref('');
@@ -332,7 +421,6 @@
                 return sellPrice.value && buyPrice.value && acquireDate.value && sellDate.value;
             });
 
-            // --- 計算邏輯 (維持原樣) ---
             const holdingDuration = computed(() => {
                 if (!acquireDate.value || !sellDate.value) return 0;
                 const start = new Date(acquireDate.value);
@@ -377,6 +465,9 @@
             const formatCurrencyWan = (val) => new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 2 }).format(val || 0) + ' 萬元';
 
             return {
+                // 匯出門禁邏輯
+                isUnlocked, errorMessage, loginWithLine,
+                // 匯出計算邏輯
                 sellPrice, buyPrice, acquireDate, sellDate, acquireExpense, sellExpense, landValueIncrement,
                 isValid, holdingPeriodText, profitWan, taxRate, taxAmountYuan,
                 formatCurrency, formatCurrencyWan
