@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>房地產稅務精算與節稅評估系統 | 宏國地政 | 易丞地政</title>
+    <title>房地產稅務精算與實拿評估系統 | 宏國地政 | 易丞地政</title>
     
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -17,7 +19,6 @@
     </script>
 
     <style>
-        /* 🍎 完美還原圖片的輕盈柔和背景 */
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
             background-color: #f8fafc;
@@ -28,7 +29,6 @@
             overflow-x: hidden;
         }
         
-        /* 動態柔和漸層背景 */
         .bg-mesh { position: fixed; inset: 0; z-index: -2; background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fce7f3 100%); opacity: 0.6; }
         .bg-orb-1 { position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw; background: #bae6fd; filter: blur(100px); border-radius: 50%; z-index: -1; opacity: 0.7; animation: float 15s infinite alternate ease-in-out; }
         .bg-orb-2 { position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #fbcfe8; filter: blur(120px); border-radius: 50%; z-index: -1; opacity: 0.6; animation: float 20s infinite alternate-reverse ease-in-out; }
@@ -39,7 +39,6 @@
         input, textarea, select { user-select: auto; }
         [v-cloak] { display: none; }
 
-        /* 高透光極簡白卡 */
         .glass-card { 
             background: rgba(255, 255, 255, 0.85); 
             backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -55,14 +54,13 @@
             padding: 20px 28px; display: flex; align-items: center; gap: 12px;
         }
 
-        /* 絕對防破版輸入框 */
         .input-wrapper { position: relative; width: 100%; }
         .input-label { display: block; font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 8px; }
         
         .custom-input { 
-            width: 100%; padding: 14px 16px; padding-right: 48px; 
-            background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; 
-            font-size: 1.05rem; color: #0f172a; font-weight: 800;
+            width: 100%; padding: 14px 16px; padding-right: 42px; 
+            background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; 
+            font-size: 1rem; color: #0f172a; font-weight: 800;
             transition: all 0.2s ease; outline: none; box-sizing: border-box;
             box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
@@ -71,29 +69,17 @@
         .custom-input:disabled { background: #f1f5f9; color: #94a3b8; }
         
         .custom-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.2em; cursor: pointer; }
-        .unit-tag { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-weight: 700; font-size: 0.9rem; pointer-events: none; }
+        .unit-tag { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-weight: 700; font-size: 0.85rem; pointer-events: none; }
 
-        /* 絲滑切換器 */
         .segmented-control { background: #f1f5f9; padding: 6px; border-radius: 16px; display: flex; gap: 4px; border: 1px solid #e2e8f0; flex-wrap: wrap; }
         .segment-label { flex: 1; text-align: center; padding: 12px 6px; border-radius: 12px; cursor: pointer; font-weight: 800; color: #64748b; transition: all 0.3s ease; font-size: 0.95rem; min-width: 120px;}
         input[type="radio"]:checked + .segment-label { background: #ffffff; color: #0f172a; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         input[type="radio"]:checked + .segment-label.gold-active { color: #b45309; }
 
-        /* Checkbox */
         .premium-checkbox { appearance: none; width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 7px; cursor: pointer; position: relative; transition: all 0.2s; background: white; flex-shrink: 0; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
         .premium-checkbox:checked { background: #0f172a; border-color: #0f172a; }
         .premium-checkbox:checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 13px; }
         .premium-checkbox:disabled { background: #f1f5f9; border-color: #e2e8f0; cursor: not-allowed; }
-
-        /* 戰情報表 (深海藍 × 香檳金) */
-        .result-card { 
-            background: linear-gradient(145deg, #0f172a 0%, #020617 100%); 
-            color: white; border-radius: 24px; position: relative; overflow: hidden; 
-            box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.4); 
-            border: 1px solid rgba(255,255,255,0.08); transition: all 0.5s ease; 
-        }
-        .result-card.golden-mode { background: linear-gradient(145deg, #451a03 0%, #170500 100%); border-color: rgba(217, 119, 6, 0.3); }
-        .result-card.alert-mode { background: linear-gradient(145deg, #450a0a 0%, #170202 100%); border-color: rgba(225, 29, 72, 0.4); }
 
         .btn-action { 
             background: linear-gradient(135deg, #06C755 0%, #05a346 100%); color: white; 
@@ -103,11 +89,10 @@
         }
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(6, 199, 85, 0.35); filter: brightness(1.05); }
 
-        .btn-alert { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); border-color: #f87171; box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25); }
-        .btn-alert:hover { box-shadow: 0 12px 25px rgba(220, 38, 38, 0.35); }
+        .btn-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #000; border-radius: 14px; font-weight: 900; box-shadow: 0 8px 20px rgba(212, 175, 55, 0.25); transition: all 0.2s ease; border: none; width: 100%; padding: 16px; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(212, 175, 55, 0.35); filter: brightness(1.05); }
 
-        /* 動畫 */
-        .expand-enter-active, .expand-leave-active { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 800px; opacity: 1; overflow: hidden; }
+        .expand-enter-active, .expand-leave-active { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 1200px; opacity: 1; overflow: hidden; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; padding-top: 0; padding-bottom: 0; }
         .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
@@ -115,10 +100,116 @@
         .step-badge { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; background: #e2e8f0; color: #475569; }
         .step-badge.active { background: #0f172a; color: #ffffff; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
 
-        /* 複製成功提示框 */
         .toast-msg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #0f172a; padding: 14px 24px; border-radius: 50px; font-weight: 800; box-shadow: 0 15px 30px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 10000; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .toast-enter-active, .toast-leave-active { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -20px) scale(0.9); }
+        
+        .sub-group-title { font-size: 0.85rem; font-weight: 900; color: #64748b; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .sub-group-title::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+        /* ====== 👑 私人銀行級 高級圖卡樣式 ====== */
+        .premium-export-card {
+            background: linear-gradient(145deg, #0B132B 0%, #1C2541 100%);
+            color: #ffffff;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 0;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        /* 低調光暈背景 */
+        .premium-export-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
+            z-index: 0; pointer-events: none;
+        }
+
+        .premium-content { position: relative; z-index: 10; padding: 40px; }
+
+        .report-brand-header {
+            text-align: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+        }
+        .report-brand-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #D4AF37;
+            letter-spacing: 0.15em;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(212,175,55,0.2);
+        }
+        .report-brand-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 0.95rem;
+        }
+        .data-label { color: rgba(255,255,255,0.7); font-weight: 500; }
+        .data-value { color: #ffffff; font-weight: 700; font-family: 'Noto Sans TC', sans-serif; }
+        .data-value.negative { color: #F87171; }
+        .data-value.highlight { color: #D4AF37; }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #D4AF37;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 解決切字與大數字排版 */
+        .big-number-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        .big-number-label {
+            font-size: 0.9rem;
+            color: #D4AF37;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .big-number-value {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 4rem; /* 放很大 */
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.2; /* 絕對防止切字 */
+            padding-bottom: 10px; /* 絕對防止切字 */
+            overflow: visible;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .big-number-value.loss { color: #F87171; }
+
+        .report-footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.1em;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body class="p-4 md:p-6 lg:p-8">
@@ -131,7 +222,9 @@
 <div id="app" v-cloak class="w-full max-w-[1100px] mx-auto relative">
 
     <transition name="toast">
-        <div v-if="showToast" class="toast-msg"><i class="fa-solid fa-circle-check text-green-500 text-xl"></i> 報告已複製！正為您跳轉至 LINE...</div>
+        <div v-if="showToast" class="toast-msg">
+            <i :class="toastIcon" :style="{color: toastColor}" class="text-xl"></i> {{ toastMessage }}
+        </div>
     </transition>
 
     <transition name="fade">
@@ -153,12 +246,12 @@
                     宏國地政 <span class="text-slate-300 font-light mx-2">|</span> 易丞地政
                 </h1>
                 <p class="text-[#b45309] text-sm md:text-base font-black tracking-widest bg-white/60 inline-block px-3 py-1 rounded-lg border border-white shadow-sm">
-                    AI 房地產稅務精算與節稅評估系統
+                    AI 房地合一稅與現金實拿精算系統
                 </p>
             </div>
             <div class="bg-white/80 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2.5 border border-white">
                 <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span>
-                <span class="text-xs font-black text-gray-700 tracking-wider">系統連線中</span>
+                <span class="text-xs font-black text-gray-700 tracking-wider">私人理財顧問模式</span>
             </div>
         </header>
 
@@ -179,11 +272,11 @@
                         <transition name="expand">
                             <div v-if="eraStatus === 'old_pre_2012'" class="mt-5 p-4 md:p-5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white shrink-0 shadow-sm"><i class="fa-solid fa-scale-unbalanced text-lg"></i></div>
-                                <div><span class="font-black text-amber-900 text-sm block mb-1">【判定：101/08 以前取得】</span><span class="text-xs md:text-sm text-amber-700 font-bold">適用純舊制 (財交稅)。無實價登錄，多採標準率認定。</span></div>
+                                <div><span class="font-black text-amber-900 text-sm block mb-1">【判定：101/08 以前取得】</span><span class="text-xs md:text-sm text-amber-700 font-bold">適用純舊制 (財交稅)。</span></div>
                             </div>
                             <div v-else-if="eraStatus === 'old_post_2012'" class="mt-5 p-4 md:p-5 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-sm"><i class="fa-solid fa-file-contract text-lg"></i></div>
-                                <div><span class="font-black text-emerald-900 text-sm block mb-1">【判定：101/08 ~ 104/12 取得】</span><span class="text-xs md:text-sm text-emerald-700 font-bold">適用過渡舊制。具實價登錄，國稅局可能要求核實認定。</span></div>
+                                <div><span class="font-black text-emerald-900 text-sm block mb-1">【判定：101/08 ~ 104/12 取得】</span><span class="text-xs md:text-sm text-emerald-700 font-bold">適用過渡舊制。</span></div>
                             </div>
                             <div v-else-if="eraStatus === 'new'" class="mt-5 p-4 md:p-5 bg-[#0f172a] rounded-2xl flex items-center gap-4 shadow-md">
                                 <div class="w-10 h-10 rounded-full bg-[#d97706] flex items-center justify-center text-white shrink-0 shadow-[0_0_10px_rgba(217,119,6,0.4)]"><i class="fa-solid fa-rocket text-lg"></i></div>
@@ -197,7 +290,7 @@
                     <div v-if="eraStatus && eraStatus !== 'unknown'" class="glass-card">
                         <div class="card-header">
                             <div class="step-badge active">2</div>
-                            <h3 class="text-lg md:text-xl font-black text-[#0f172a]">{{ isOldSystem ? '舊制資產與成本建檔' : '資產定價與成本還原' }}</h3>
+                            <h3 class="text-lg md:text-xl font-black text-[#0f172a]">{{ isOldSystem ? '舊制資產與成本建檔' : '資產定價與取得成本 (抵稅用)' }}</h3>
                         </div>
                         
                         <div class="p-6 md:p-8 space-y-6">
@@ -211,10 +304,9 @@
                             </transition>
 
                             <div v-if="isOldSystem" class="space-y-6">
-                                
                                 <div v-if="acquireType === 'inherit' && eraStatus !== 'old_pre_2012'" class="p-5 bg-red-50 border-2 border-red-200 rounded-2xl shadow-sm">
                                     <h4 class="font-black text-red-700 text-sm md:text-base mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 國稅局查核天條：舊制繼承強制核實</h4>
-                                    <p class="text-xs text-red-600 font-bold leading-relaxed mb-4">依據財政部規定，出售舊制繼承或贈與之房屋，<span class="bg-red-100 px-1 rounded underline decoration-red-400">嚴禁使用標準率申報，強制採「核實認定」！</span><br>若違規申報，將遭國稅局補稅並裁罰。系統已鎖定核實認定模式。</p>
+                                    <p class="text-xs text-red-600 font-bold leading-relaxed mb-4">出售舊制繼承之房屋強制採核實認定！</p>
                                 </div>
                                 <div v-else class="segmented-control bg-slate-200/50">
                                     <input type="radio" id="old-std" v-model="oldSystemMode" value="standard" class="sr-only">
@@ -228,101 +320,80 @@
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                             <div class="input-wrapper"><label class="input-label">成交總價</label><div class="relative"><input type="number" v-model.number="sellPrice" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
                                             <div class="input-wrapper"><label class="input-label">專有坪數</label><div class="relative"><input type="number" v-model.number="oldAreaPing" class="custom-input" placeholder="0"><span class="unit-tag">坪</span></div></div>
-                                            <div class="input-wrapper sm:col-span-2"><label class="input-label">交易縣市 (豪宅判定依據)</label><div class="relative"><select v-model="oldCity" class="custom-input custom-select"><option value="" disabled selected>請選擇縣市</option><option value="Taipei">臺北市</option><option value="NewTaipei">新北市</option><option value="Taoyuan">桃園市</option><option value="Taichung">臺中市</option><option value="Tainan">臺南市</option><option value="Kaohsiung">高雄市</option><option value="OtherCity">其他縣市</option></select></div></div>
+                                            <div class="input-wrapper sm:col-span-2"><label class="input-label">交易縣市</label><div class="relative"><select v-model="oldCity" class="custom-input custom-select"><option value="" disabled selected>請選擇</option><option value="Taipei">臺北市</option><option value="NewTaipei">新北市</option><option value="Taoyuan">桃園市</option><option value="Taichung">臺中市</option><option value="Tainan">臺南市</option><option value="Kaohsiung">高雄市</option><option value="OtherCity">其他縣市</option></select></div></div>
                                         </div>
-                                        
                                         <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-5">
-                                            <div class="flex justify-between items-center mb-4">
-                                                <span class="font-black text-sm text-[#0f172a]"><i class="fa-solid fa-house text-blue-600 mr-1.5"></i>房屋評定現值</span>
-                                                <button @click="showReverseCalc = !showReverseCalc" class="text-xs font-black text-blue-700 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-blue-200 hover:bg-blue-50 transition"><i class="fa-solid fa-calculator mr-1"></i>稅單反推</button>
-                                            </div>
+                                            <div class="flex justify-between items-center mb-4"><span class="font-black text-sm text-[#0f172a]"><i class="fa-solid fa-house text-blue-600 mr-1.5"></i>房屋評定現值</span></div>
                                             <div class="relative"><input type="number" v-model.number="oldHouseValue" class="custom-input bg-white" placeholder="請輸入現值"><span class="unit-tag">元</span></div>
-                                            
-                                            <transition name="expand">
-                                                <div v-if="showReverseCalc" class="mt-4 p-4 bg-white border border-blue-200 rounded-xl shadow-sm flex flex-col md:flex-row gap-3">
-                                                    <div class="input-wrapper flex-1"><label class="input-label">稅單金額</label><input type="number" v-model="taxBillAmount" class="custom-input py-2.5 text-sm" placeholder="0"></div>
-                                                    <div class="input-wrapper flex-1"><label class="input-label">適用稅率</label><select v-model="reverseTaxRate" class="custom-input custom-select py-2.5 text-sm"><option :value="0.012">1.2%(自住)</option><option :value="0.015">1.5%(非自)</option><option :value="0.03">3.0%(營業)</option></select></div>
-                                                    <button @click="executeReverseCalc" class="bg-[#0f172a] text-white px-5 py-3 md:mt-6 rounded-xl text-sm font-black shadow-md hover:bg-slate-800 transition whitespace-nowrap">反推</button>
-                                                </div>
-                                            </transition>
                                         </div>
-
-                                        <transition name="fade">
-                                            <div v-if="!isLuxury && oldCity" class="input-wrapper">
-                                                <label class="input-label">行政區標準率</label>
-                                                <div class="relative"><select v-model="oldDistrictRate" class="custom-input custom-select"><option value="0" disabled selected>請選擇行政區</option><option v-for="(rate, dist) in availableDistricts" :key="dist" :value="rate">{{ dist }} ({{ rate }}%)</option></select></div>
-                                            </div>
-                                        </transition>
-
-                                        <transition name="expand">
-                                            <div v-if="isLuxury" class="p-5 md:p-6 bg-red-50 border border-red-200 rounded-2xl shadow-sm relative overflow-hidden">
-                                                <div class="absolute -right-4 -top-4 text-red-100 opacity-50"><i class="fa-solid fa-triangle-exclamation text-8xl"></i></div>
-                                                <h4 class="font-black text-red-700 mb-2 text-sm md:text-base relative z-10">已達豪宅門檻 (依 20% 強制核定)</h4>
-                                                <p class="text-xs text-red-600 mb-4 font-bold bg-white/80 p-2 rounded-lg inline-block relative z-10 backdrop-blur-sm">{{ luxuryReason }}</p>
-                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-                                                    <div class="input-wrapper"><label class="input-label text-red-700">土地公告現值</label><div class="relative"><input type="number" v-model.number="oldLandPricePerSqm" class="custom-input border-red-300 focus:border-red-500" placeholder="0"><span class="unit-tag text-red-500">元/m²</span></div></div>
-                                                    <div class="input-wrapper"><label class="input-label text-red-700">土地面積</label><div class="relative"><input type="number" v-model.number="oldLandArea" class="custom-input border-red-300 focus:border-red-500" placeholder="0"><span class="unit-tag text-red-500">m²</span></div></div>
-                                                </div>
-                                            </div>
-                                        </transition>
+                                        <div v-if="!isLuxury && oldCity" class="input-wrapper">
+                                            <label class="input-label">行政區標準率</label>
+                                            <div class="relative"><select v-model="oldDistrictRate" class="custom-input custom-select"><option value="0" disabled selected>請選擇行政區</option><option v-for="(rate, dist) in availableDistricts" :key="dist" :value="rate">{{ dist }} ({{ rate }}%)</option></select></div>
+                                        </div>
                                     </div>
 
                                     <div v-else class="space-y-5">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                            <div class="input-wrapper"><label class="input-label">賣出總額</label><div class="relative"><input type="number" v-model.number="sellPrice" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                            <div class="input-wrapper"><label class="input-label">賣出總價</label><div class="relative"><input type="number" v-model.number="sellPrice" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
                                             <div class="input-wrapper">
-                                                <label class="input-label" :class="acquireType==='inherit'?'text-[#b45309]':''">{{ acquireType === 'inherit' ? '繼承/受贈時現值總額' : '買入總額' }}</label>
+                                                <label class="input-label" :class="acquireType==='inherit'?'text-[#b45309]':''">{{ acquireType === 'inherit' ? '繼承/受贈現值' : '買入總價' }}</label>
                                                 <div class="relative"><input type="number" v-model.number="buyPrice" class="custom-input" :class="acquireType==='inherit'?'border-amber-300 bg-amber-50':''" placeholder="0"><span class="unit-tag">萬</span></div>
-                                                <p v-if="acquireType === 'inherit'" class="text-[10px] text-amber-700 font-bold mt-1.5"><i class="fa-solid fa-circle-info"></i> 舊制僅能以房屋現值作為成本</p>
-                                            </div>
-                                            <div class="input-wrapper"><label class="input-label">取得必要費用</label><div class="relative"><input type="number" v-model.number="acquireExpense" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
-                                            <div class="input-wrapper">
-                                                <label class="input-label text-red-600">列舉出售費用 (須單據)</label>
-                                                <div class="relative"><input type="number" v-model.number="sellExpense" class="custom-input border-red-200 focus:border-red-500" placeholder="依單據核實"><span class="unit-tag text-red-400">萬</span></div>
-                                                <p class="text-[10px] text-red-500 font-bold mt-1.5 leading-tight"><i class="fa-solid fa-triangle-exclamation"></i> 無 3% 免舉證，須依單據</p>
                                             </div>
                                         </div>
                                         <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                                            <h4 class="font-black text-[#0f172a] text-sm mb-4"><i class="fa-solid fa-chart-pie text-blue-500 mr-1.5"></i>房地比拆算區</h4>
+                                            <h4 class="font-black text-[#0f172a] text-sm mb-4">房地比拆算區</h4>
                                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                <div class="input-wrapper"><label class="input-label">房屋現值</label><input type="number" v-model.number="oldHouseValue" class="custom-input py-2.5 text-sm" placeholder="0"></div>
-                                                <div class="input-wrapper"><label class="input-label">地價(元/m²)</label><input type="number" v-model.number="oldLandPricePerSqm" class="custom-input py-2.5 text-sm" placeholder="0"></div>
-                                                <div class="input-wrapper"><label class="input-label">面積(m²)</label><input type="number" v-model.number="oldLandArea" class="custom-input py-2.5 text-sm" placeholder="0"></div>
+                                                <div class="input-wrapper"><label class="input-label">房屋現值</label><input type="number" v-model.number="oldHouseValue" class="custom-input py-2" placeholder="0"></div>
+                                                <div class="input-wrapper"><label class="input-label">地價(元/m²)</label><input type="number" v-model.number="oldLandPricePerSqm" class="custom-input py-2" placeholder="0"></div>
+                                                <div class="input-wrapper"><label class="input-label">面積(m²)</label><input type="number" v-model.number="oldLandArea" class="custom-input py-2" placeholder="0"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </transition>
                             </div>
 
-                            <div v-else class="space-y-5">
+                            <div v-else class="space-y-6">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div class="input-wrapper col-span-2 md:col-span-1"><label class="input-label">預計售出總價</label><div class="relative"><input type="number" v-model.number="sellPrice" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
-                                    <div v-if="acquireType === 'buy'" class="input-wrapper col-span-2 md:col-span-1"><label class="input-label">原取得買價 (成本)</label><div class="relative"><input type="number" v-model.number="buyPrice" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                    <div class="input-wrapper"><label class="input-label">預計售出總價</label><div class="relative"><input type="number" v-model.number="sellPrice" class="custom-input border-blue-200 focus:border-blue-500" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                    <div v-if="acquireType === 'buy'" class="input-wrapper"><label class="input-label">原取得買價 (房屋總價)</label><div class="relative"><input type="number" v-model.number="buyPrice" class="custom-input" placeholder="0"><span class="unit-tag">萬</span></div></div>
                                 </div>
 
                                 <transition name="expand">
-                                    <div v-if="acquireType === 'inherit'" class="p-5 md:p-6 rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-white shadow-sm relative overflow-hidden">
-                                        <div class="absolute -right-4 -bottom-4 text-amber-500 opacity-10"><i class="fa-solid fa-wand-magic-sparkles text-8xl"></i></div>
-                                        <h4 class="font-black text-[#b45309] mb-4 text-sm relative z-10"><i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-[#d97706]"></i>代書極低成本還原引擎</h4>
-                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10">
-                                            <div class="input-wrapper"><label class="input-label text-amber-800">繼承時現值總額</label><div class="relative"><input type="number" v-model.number="assessedValue" class="custom-input border-amber-200 focus:border-amber-500" placeholder="0"><span class="unit-tag text-amber-600">萬</span></div></div>
-                                            <div class="input-wrapper"><label class="input-label text-amber-800">物價漲幅 (預設10%)</label><div class="relative"><input type="number" v-model.number="cpiRate" class="custom-input border-amber-200 focus:border-amber-500" placeholder="10"><span class="unit-tag text-amber-600">%</span></div></div>
-                                            <div class="input-wrapper"><label class="input-label text-red-600">承接之房貸餘額</label><div class="relative"><input type="number" v-model.number="assumedMortgage" class="custom-input border-red-300 focus:border-red-500" placeholder="0"><span class="unit-tag text-red-500">萬</span></div></div>
+                                    <div v-if="acquireType === 'inherit'" class="p-5 rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-white shadow-sm">
+                                        <h4 class="font-black text-[#b45309] mb-4 text-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-[#d97706]"></i>代書極低成本還原引擎</h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            <div class="input-wrapper"><label class="input-label text-amber-800">繼承時現值總額</label><div class="relative"><input type="number" v-model.number="assessedValue" class="custom-input border-amber-200 focus:border-amber-500 py-2" placeholder="0"><span class="unit-tag text-amber-600">萬</span></div></div>
+                                            <div class="input-wrapper"><label class="input-label text-amber-800">物價漲幅 (預設10%)</label><div class="relative"><input type="number" v-model.number="cpiRate" class="custom-input border-amber-200 focus:border-amber-500 py-2" placeholder="10"><span class="unit-tag text-amber-600">%</span></div></div>
+                                            <div class="input-wrapper"><label class="input-label text-red-600">承接之房貸餘額</label><div class="relative"><input type="number" v-model.number="assumedMortgage" class="custom-input border-red-300 focus:border-red-500 py-2" placeholder="0"><span class="unit-tag text-red-500">萬</span></div></div>
                                         </div>
                                     </div>
                                 </transition>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2">
-                                    <div class="input-wrapper"><label class="input-label">必要費用 (如契稅)</label><div class="relative"><input type="number" v-model.number="acquireExpense" class="custom-input py-3" placeholder="0"><span class="unit-tag">萬</span></div></div>
-                                    <div class="input-wrapper relative">
-                                        <label class="input-label">未列舉出售費</label>
-                                        <div class="relative">
-                                            <input type="number" v-model.number="sellExpense" class="custom-input py-3 border-amber-200 focus:border-amber-500" :placeholder="sellPrice ? `預設 ${autoSellExpense} 萬` : '抓3%'">
-                                            <span class="unit-tag">萬</span>
+                                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                                    <div class="sub-group-title"><i class="fa-solid fa-file-invoice-dollar"></i> 取得時的必要成本細項 (此區僅供抵稅，不扣實拿)</div>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        <div class="input-wrapper"><label class="input-label">契稅</label><div class="relative"><input type="number" v-model.number="acqCosts.deedTax" class="custom-input py-2" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                        <div class="input-wrapper"><label class="input-label">印花稅</label><div class="relative"><input type="number" v-model.number="acqCosts.stampTax" class="custom-input py-2" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                        <div class="input-wrapper">
+                                            <label class="input-label text-blue-700">履約保證費 (買入)</label>
+                                            <div class="relative"><input type="number" v-model.number="acqCosts.escrowFee" class="custom-input py-2 border-blue-200" placeholder="萬分之3自動算"><span class="unit-tag">萬</span></div>
                                         </div>
-                                        <p v-if="sellPrice && (sellExpense === null || sellExpense === '')" class="absolute -bottom-6 left-1 text-[11px] text-[#d97706] font-bold whitespace-nowrap"><i class="fa-solid fa-bolt mr-1"></i>自動帶入成交價 3%</p>
+                                        <div class="input-wrapper"><label class="input-label">代書費</label><div class="relative"><input type="number" v-model.number="acqCosts.agentFee" class="custom-input py-2" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                        <div class="input-wrapper col-span-2 md:col-span-2">
+                                            <label class="input-label">裝潢費 (須附發票與合約)</label>
+                                            <div class="relative"><input type="number" v-model.number="acqCosts.renovation" class="custom-input py-2" placeholder="0"><span class="unit-tag">萬</span></div>
+                                            <p class="text-[10px] text-amber-600 font-bold mt-1.5"><i class="fa-solid fa-triangle-exclamation"></i> 國稅局查核嚴格，限固定物不可拆卸</p>
+                                        </div>
                                     </div>
-                                    <div class="input-wrapper"><label class="input-label">土地漲價總數額</label><div class="relative"><input type="number" v-model.number="landValueIncrement" class="custom-input py-3" placeholder="0"><span class="unit-tag">萬</span></div></div>
+                                    <div class="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center text-sm font-black text-slate-700">
+                                        <span>取得成本合計：</span>
+                                        <span class="text-lg text-[#0f172a]">{{ totalAcquireExpense.toFixed(4) }} 萬</span>
+                                    </div>
+                                </div>
+
+                                <div class="input-wrapper mt-4">
+                                    <label class="input-label text-emerald-700"><i class="fa-solid fa-arrow-down-short-wide"></i> 土地漲價總數額 (降低稅基用)</label>
+                                    <div class="relative"><input type="number" v-model.number="landValueIncrement" class="custom-input border-emerald-200 focus:border-emerald-500 py-3 md:w-1/2" placeholder="請查看土增稅單"><span class="unit-tag text-emerald-600">萬</span></div>
                                 </div>
                             </div>
                         </div>
@@ -330,9 +401,67 @@
                 </transition>
 
                 <transition name="fade">
+                    <div v-if="eraStatus && eraStatus !== 'unknown'" class="glass-card">
+                        <div class="card-header justify-between bg-blue-50/50">
+                            <div class="flex items-center gap-3"><div class="step-badge active" style="background:#2563eb;">3</div><h3 class="text-lg md:text-xl font-black text-blue-900">出售費用與現金流精算</h3></div>
+                        </div>
+                        <div class="p-6 md:p-8 space-y-5">
+                            
+                            <div v-if="!isOldSystem" class="p-4 rounded-xl mb-4 transition-all" :class="isUsingStatutory ? 'bg-emerald-50 border border-emerald-200' : 'bg-blue-50 border border-blue-200'">
+                                <h4 class="text-sm font-black mb-1 flex items-center gap-2" :class="isUsingStatutory ? 'text-emerald-800' : 'text-blue-800'">
+                                    <i class="fa-solid" :class="isUsingStatutory ? 'fa-wand-magic-sparkles' : 'fa-calculator'"></i>
+                                    {{ isUsingStatutory ? '系統自動切換【法定 3% 免舉證】申報扣除！' : '系統採用【實際單據核實】申報扣除！' }}
+                                </h4>
+                                <p class="text-[11px] font-bold text-gray-600 mt-2 leading-relaxed">
+                                    實際單據總計：<span class="text-gray-900">{{ totalActualSellExpense.toFixed(4) }} 萬</span> ｜ 法定 3% 上限：<span class="text-gray-900">{{ statutorySellExpense.toFixed(2) }} 萬</span><br>
+                                    (註：申報扣除方式僅影響稅金高低，不影響下方實拿現金流的真實扣款)
+                                </p>
+                            </div>
+
+                            <div class="sub-group-title"><i class="fa-solid fa-handshake-angle"></i> 實際出售費用細項 (影響現金實拿)</div>
+                            
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <div class="input-wrapper col-span-2">
+                                    <label class="input-label text-[#0f172a]">房仲服務費 (%)</label>
+                                    <div class="relative"><input type="number" v-model.number="sellExp.brokerRate" class="custom-input border-blue-200 focus:border-blue-500 py-2" placeholder="4"><span class="unit-tag text-blue-500">%</span></div>
+                                    <p class="text-[10px] text-blue-600 font-bold mt-1.5">換算：{{ brokerFeeWan.toFixed(2) }} 萬</p>
+                                </div>
+                                <div class="input-wrapper">
+                                    <label class="input-label">代書費</label>
+                                    <div class="relative"><input type="number" v-model.number="sellExp.agentFee" class="custom-input py-2" placeholder="0"><span class="unit-tag">萬</span></div>
+                                </div>
+                                <div class="input-wrapper">
+                                    <label class="input-label text-blue-700">履保費 (賣出)</label>
+                                    <div class="relative"><input type="number" v-model.number="sellExp.escrowFee" class="custom-input py-2 border-blue-200" placeholder="萬分之3"><span class="unit-tag">萬</span></div>
+                                </div>
+                                <div class="input-wrapper col-span-2">
+                                    <label class="input-label">其他規費 (不含清潔費)</label>
+                                    <div class="relative"><input type="number" v-model.number="sellExp.otherFees" class="custom-input py-2" placeholder="0"><span class="unit-tag">萬</span></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-5 border-t border-gray-200">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="input-wrapper">
+                                        <label class="input-label text-red-700 font-black"><i class="fa-solid fa-money-bill-wave"></i> 實繳土增稅 (現金支出)</label>
+                                        <div class="relative"><input type="number" v-model.number="actualLandTaxWan" class="custom-input border-red-300 focus:border-red-500 py-3 text-lg" placeholder="0"><span class="unit-tag text-red-500">萬</span></div>
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <label class="input-label text-indigo-700 font-black"><i class="fa-solid fa-building-columns"></i> 結清房貸餘額 (尾款清償)</label>
+                                        <div class="relative"><input type="number" v-model.number="payoffMortgageWan" class="custom-input border-indigo-300 focus:border-indigo-500 py-3 text-lg" placeholder="0"><span class="unit-tag text-indigo-500">萬</span></div>
+                                        <p class="text-[10.5px] text-indigo-500 font-bold mt-1.5 leading-tight">直接扣除最終入帳現金</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </transition>
+
+                <transition name="fade">
                     <div v-if="eraStatus === 'new'" class="glass-card">
                         <div class="card-header justify-between">
-                            <div class="flex items-center gap-3"><div class="step-badge active">3</div><h3 class="text-lg md:text-xl font-black text-[#0f172a]">高階節稅防護網</h3></div>
+                            <div class="flex items-center gap-3"><div class="step-badge active">4</div><h3 class="text-lg md:text-xl font-black text-[#0f172a]">高階節稅防護網</h3></div>
                             <span class="text-[10px] font-black bg-[#0f172a] text-[#d97706] px-2.5 py-1 rounded shadow-sm uppercase tracking-widest">PRO</span>
                         </div>
                         <div class="p-6 md:p-8 space-y-5">
@@ -347,7 +476,10 @@
                                 <label class="flex items-center justify-between p-5 cursor-pointer">
                                     <div class="flex items-center gap-4">
                                         <input type="checkbox" v-model="flags.isInvoluntary" :disabled="holdingDuration > 5" @change="exclusiveCheck('isInvoluntary')" class="premium-checkbox" :style="flags.isInvoluntary ? 'background:#e11d48; border-color:#e11d48;' : ''">
-                                        <div><span class="block text-base font-black text-[#0f172a] mb-0.5">非自願/特殊因素</span><span class="text-xs text-gray-500 font-bold">強制適用 20% 稅率</span></div>
+                                        <div>
+                                            <span class="block text-base font-black text-[#0f172a] mb-0.5">非自願/特殊因素</span>
+                                            <span class="text-xs text-gray-500 font-bold">強制適用 20% 稅率</span>
+                                        </div>
                                     </div>
                                     <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" :class="{'rotate-180 text-red-500': flags.isInvoluntary}"></i>
                                 </label>
@@ -365,7 +497,7 @@
                             <div class="rounded-2xl border bg-white overflow-hidden transition-all hover:shadow-md" :class="{'border-[#0f172a] shadow-lg': flags.isRepurchase, 'border-slate-200': !flags.isRepurchase}">
                                 <label class="flex items-center gap-4 p-5 cursor-pointer">
                                     <input type="checkbox" v-model="flags.isRepurchase" class="premium-checkbox">
-                                    <div><span class="block text-base font-black text-[#0f172a] mb-0.5">重購退稅機制</span><span class="text-xs text-gray-500 font-bold">兩年內一買一賣 (全額/比例退稅)</span></div>
+                                    <div><span class="block text-base font-black text-[#0f172a] mb-0.5">重購退稅機制</span><span class="text-xs text-gray-500 font-bold">兩年內一買一賣</span></div>
                                 </label>
                                 <transition name="expand">
                                     <div v-if="flags.isRepurchase" class="p-5 bg-slate-50 border-t border-slate-200">
@@ -384,70 +516,98 @@
                     <div v-if="!isValid" class="glass-card p-10 text-center flex flex-col items-center justify-center min-h-[400px] border-dashed border-2 border-slate-300 shadow-none bg-white/50">
                         <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-300 text-4xl shadow-inner"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                         <h4 class="font-black text-gray-500 text-lg mb-2">系統待命中</h4>
-                        <p class="text-gray-400 text-sm font-bold leading-relaxed">完成左側參數設定<br>生成專屬稅務分析報告</p>
+                        <p class="text-gray-400 text-sm font-bold leading-relaxed">完成左側參數設定<br>生成稅務與現金流分析報告</p>
                     </div>
 
-                    <div v-else class="result-card p-6 md:p-8" :class="{ 'golden-mode': isOldSystem, 'alert-mode': isHighTaxAlert && !flags.isRepurchase && !isOldSystem || (isOldSystem && isLuxury) }">
-
-                        <h3 class="text-lg md:text-xl font-black mb-6 md:mb-8 pb-3 md:pb-4 relative z-10 flex items-center gap-3 border-b" :class="isOldSystem ? 'text-[#D4AF37] border-[#D4AF37]/30' : (isHighTaxAlert && !flags.isRepurchase ? 'text-red-400 border-red-500/30' : 'text-white border-white/20')">
-                            <i class="fa-solid" :class="isOldSystem ? 'fa-scale-balanced' : (isHighTaxAlert && !flags.isRepurchase ? 'fa-triangle-exclamation' : 'fa-chart-pie')"></i> 
-                            {{ isOldSystem ? '舊制財交稅分析報告' : '稅務精算報表' }}
-                        </h3>
-                        
-                        <div class="space-y-6 md:space-y-8 relative z-10">
-                            
-                            <template v-if="isOldSystem">
-                                <div class="py-2">
-                                    <h2 class="text-xs font-bold text-white/60 tracking-widest mb-3 uppercase text-center">核定財產交易所得</h2>
-                                    <div class="bg-black/30 p-5 rounded-2xl border border-white/10 mb-4 shadow-inner text-center overflow-hidden">
-                                        <div class="text-4xl md:text-5xl font-black text-[#D4AF37] drop-shadow-md truncate w-full" :title="formatCurrency(oldSystemIncomeYuan)">
-                                            {{ formatCurrency(oldSystemIncomeYuan) }}
-                                        </div>
+                    <div v-else>
+                        <div id="tax-report-card" class="premium-export-card">
+                            <div class="premium-content">
+                                
+                                <div class="report-brand-header">
+                                    <div class="report-brand-title">宏國地政 <span style="color: rgba(255,255,255,0.2); margin: 0 4px;">|</span> 易丞地政</div>
+                                    <div class="report-brand-subtitle">專屬不動產財務與稅務精算報告</div>
+                                </div>
+                                
+                                <div class="section-title"><i class="fa-solid fa-scale-balanced"></i> 稅務精算分析</div>
+                                
+                                <template v-if="isOldSystem">
+                                    <div class="data-row">
+                                        <span class="data-label">適用法規</span>
+                                        <span class="data-value highlight">舊制 (財交稅)</span>
                                     </div>
-                                    <div v-if="isLuxury" class="text-[11px] text-red-200 font-bold bg-red-900/60 inline-block px-3 py-1.5 rounded-lg border border-red-500/40 mb-3 shadow-sm text-center w-full">🚨 觸發豪宅：依 20% 強制核定</div>
-                                    <p class="text-[11px] text-[#D4AF37]/80 font-bold text-center">※ 需併入個人綜合所得稅(5%~40%)申報</p>
-                                </div>
-                            </template>
+                                    <div class="data-row">
+                                        <span class="data-label">核定財產交易所得</span>
+                                        <span class="data-value">{{ formatCurrency(oldSystemIncomeYuan) }} (併入綜所稅)</span>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="data-row">
+                                        <span class="data-label">持有期間</span>
+                                        <span class="data-value">{{ holdingPeriodText }}</span>
+                                    </div>
+                                    <div class="data-row">
+                                        <span class="data-label">申報費用扣除方式</span>
+                                        <span class="data-value">{{ isUsingStatutory ? '法定 3% 免舉證' : '實際單據核定' }}</span>
+                                    </div>
+                                    <div class="data-row">
+                                        <span class="data-label">適用稅率</span>
+                                        <span class="data-value">{{ taxRate }}%</span>
+                                    </div>
+                                    <div class="data-row" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;">
+                                        <span class="data-label">預估房地合一稅金</span>
+                                        <span class="data-value negative">{{ formatCurrency(finalTaxAmountYuan) }}</span>
+                                    </div>
+                                </template>
 
-                            <template v-else>
-                                <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-md mb-2">
-                                    <span class="text-xs text-white/70 font-bold">持有期間</span>
-                                    <span class="text-sm md:text-base text-white font-black">{{ holdingPeriodText }}</span>
+                                <div class="section-title"><i class="fa-solid fa-building-columns"></i> 結案日真實現金流</div>
+                                
+                                <div class="data-row">
+                                    <span class="data-label">預估售出總價</span>
+                                    <span class="data-value">{{ sellPrice || 0 }} 萬</span>
                                 </div>
-                                <div class="flex justify-between items-center px-2 pt-2">
-                                    <span class="text-white/60 text-xs font-bold">適用法規稅率</span>
-                                    <span class="bg-white/10 text-white text-xs font-black px-4 py-1.5 rounded-lg border border-white/20">{{ taxRate }}%</span>
+                                <div class="data-row">
+                                    <span class="data-label">扣除：實際出售費用合計</span>
+                                    <span class="data-value">- {{ totalActualSellExpense.toFixed(4) }} 萬</span>
                                 </div>
-                                <div class="flex justify-between items-center border-b border-white/10 pb-5 px-2">
-                                    <span class="text-white/60 text-xs font-bold">基礎應納稅金</span>
-                                    <span class="text-lg md:text-xl text-white font-bold">{{ formatCurrency(baseTaxAmountYuan) }}</span>
+                                <div class="data-row" v-if="actualLandTaxWan > 0">
+                                    <span class="data-label">扣除：實繳土增稅</span>
+                                    <span class="data-value">- {{ actualLandTaxWan || 0 }} 萬</span>
                                 </div>
-                                <div v-if="flags.isRepurchase && repurchasePrice > 0" class="bg-[#d97706]/20 p-4 rounded-xl border border-[#d97706]/30 mt-2">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-[#fde68a] text-xs font-bold">重購退稅抵扣</span>
-                                        <span class="text-lg md:text-xl text-[#fde68a] font-black">-{{ formatCurrency(repurchaseRefundYuan) }}</span>
+                                <div class="data-row" v-if="payoffMortgageWan > 0">
+                                    <span class="data-label text-indigo-300">扣除：結清房貸尾款</span>
+                                    <span class="data-value text-indigo-300">- {{ payoffMortgageWan || 0 }} 萬</span>
+                                </div>
+                                <div class="data-row">
+                                    <span class="data-label">扣除：{{ isOldSystem ? '預估財交稅 (以20%計)' : '房地合一稅金' }}</span>
+                                    <span v-if="!isOldSystem" class="data-value negative">- {{ (finalTaxAmountYuan / 10000).toFixed(2) }} 萬</span>
+                                    <span v-else class="data-value negative">- {{ (oldSystemIncomeYuan * 0.2 / 10000).toFixed(2) }} 萬 (粗估)</span>
+                                </div>
+
+                                <div class="big-number-box">
+                                    <div class="big-number-label">結案日銀行真實入帳 (淨流入現金)</div>
+                                    <div class="big-number-value" :class="{ 'loss': netCashInBankWan < 0 }">
+                                        {{ formatCurrencyWan(netCashInBankWan) }}
                                     </div>
                                 </div>
-                                <div class="pt-3 px-2">
-                                    <p class="text-[10px] text-white/50 mb-2 font-black tracking-widest uppercase">預估實繳稅額</p>
-                                    <div class="text-4xl md:text-5xl font-black tracking-tighter truncate w-full" :title="formatCurrency(finalTaxAmountYuan)" :class="finalTaxAmountYuan === 0 ? 'text-white' : (isHighTaxAlert && !flags.isRepurchase ? 'text-red-400' : 'text-[#D4AF37]')">
-                                        {{ formatCurrency(finalTaxAmountYuan) }}
-                                    </div>
-                                </div>
-                            </template>
 
-                            <div class="mt-6 pt-6 border-t border-white/10">
-                                <button @click="generateAndCopyReport" class="w-full flex items-center justify-center py-4 text-xs md:text-sm transition-all shadow-lg rounded-xl"
-                                    :class="(isOldSystem && isLuxury) || (isHighTaxAlert && !flags.isRepurchase && !isOldSystem) ? 'btn-alert' : 'btn-action'">
-                                    <span class="flex items-center tracking-wide font-black">
-                                        <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> 
-                                        {{ (isOldSystem && isLuxury) || (isHighTaxAlert && !flags.isRepurchase && !isOldSystem) ? '複製高危報告・通報代書' : '複製專屬報告・啟動諮詢' }}
-                                    </span>
-                                </button>
-                                <p class="text-[10px] text-white/40 mt-4 text-center leading-relaxed font-bold tracking-wide">
-                                    點擊按鈕將自動生成文字報告，並跳轉至官方 LINE
-                                </p>
+                                <div class="report-footer">
+                                    試算產出日期：{{ new Date().toLocaleDateString('zh-TW') }} ｜ 報告僅供參考，以國稅局核定為準
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="mt-6 flex flex-col gap-3" data-html2canvas-ignore="true">
+                            <button @click="generateAndCopyReport" class="w-full flex items-center justify-center py-3 text-xs md:text-sm transition-all shadow-lg rounded-xl btn-action">
+                                <span class="flex items-center tracking-wide font-black">
+                                    <i class="fa-brands fa-line mr-2"></i> 複製精算報告文字
+                                </span>
+                            </button>
+
+                            <button @click="downloadJPG" class="w-full flex items-center justify-center py-3 text-xs md:text-sm transition-all shadow-lg rounded-xl btn-gold">
+                                <span class="flex items-center tracking-wide font-black">
+                                    <i class="fa-solid fa-camera mr-2"></i> 下載私人銀行級圖卡
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </transition>
@@ -464,12 +624,16 @@
             const isUnlocked = ref(false); 
             const errorMessage = ref("");
             const showToast = ref(false); 
+            const toastMessage = ref("");
+            const toastIcon = ref("");
+            const toastColor = ref("");
+            
             const gasAuthUrl = "https://script.google.com/macros/s/AKfycbwiIbmZWvNkOZW1wPBSZT1b5MKcfeeU8LtfqOiPZE0gN0VPkxJDguhKmb6rTJnSWWBnCA/exec";
             const officialLineUrl = "https://lin.ee/iOE3Dtd"; 
 
             onMounted(() => {
                 if (window.location.protocol === 'file:') { isUnlocked.value = true; return; }
-                const urlParams = new URLSearchParams(window.location.search);
+                const urlParams = newSearchParams(window.location.search);
                 const authStatus = urlParams.get('nexus_auth');
                 if (authStatus === 'success') {
                     localStorage.setItem('hg_line_auth', 'true'); isUnlocked.value = true;
@@ -484,13 +648,9 @@
             const loginWithLine = () => { window.location.href = `${gasAuthUrl}?state=${encodeURIComponent(window.location.origin + window.location.pathname)}`; };
 
             const taxData = {
-                'Taipei': { 'luxury_price': 6000, 'luxury_unit': 120, 'districts': { '中山區': 50, '松山區': 50, '中正區': 50, '大安區': 50, '信義區': 50, '士林區': 48, '內湖區': 48, '大同區': 48, '南港區': 48, '北投區': 47, '萬華區': 47, '文山區': 47 } },
-                'NewTaipei': { 'luxury_price': 4000, 'luxury_unit': 75, 'districts': { '板橋區': 47, '永和區': 47, '中和區': 47, '三重區': 47, '新店區': 47, '蘆洲區': 47, '新莊區': 47, '土城區': 47, '林口區': 47, '汐止區': 46, '樹林區': 46, '泰山區': 41, '五股區': 39, '三峽區': 34, '淡水區': 31, '八里區': 27, '深坑區': 25, '鶯歌區': 24, '萬里區': 23, '瑞芳區': 23, '三芝區': 20, '金山區': 19, '石碇/烏來/平溪/坪林/石門/雙溪/貢寮': 14 } },
-                'Taoyuan': { 'luxury_price': 3000, 'luxury_unit': 50, 'districts': { '桃園區': 38, '中壢區': 38, '八德區': 37, '蘆竹區': 35, '龜山區': 35, '平鎮區': 30, '楊梅區': 27, '大園區': 27, '龍潭區': 23, '大溪區': 23, '新屋區': 18, '觀音區': 16, '復興區': 8 } },
-                'Taichung': { 'luxury_price': 3000, 'luxury_unit': 50, 'districts': { '西屯區': 40, '南屯區': 38, '南區': 35, '北屯區': 34, '西區': 32, '東區': 32, '北區': 30, '太平區': 29, '中區': 28, '烏日區': 26, '大里區': 26, '豐原區': 24, '潭子區': 23, '沙鹿區': 23, '大雅區': 22, '龍井區': 21, '大肚區': 21, '霧峰區': 21, '后里區': 20, '神岡區': 20, '大甲區': 19, '梧棲區': 18, '清水區': 17, '東勢區': 15, '外埔區': 14, '新社區': 12, '大安區': 12, '石岡區': 10, '和平區': 8 } },
-                'Tainan': { 'luxury_price': 3000, 'luxury_unit': 50, 'districts': { '東區': 32, '安南區': 30, '北區': 30, '中西區': 30, '安平區': 30, '永康區': 28, '南區': 28, '善化區': 26, '新市區': 26, '歸仁區': 25, '仁德區': 25, '安定區': 24, '新營區': 21, '官田區': 20, '西港區': 20, '麻豆區': 19, '新化區': 19, '柳營區': 18, '佳里區': 18, '關廟區': 17, '鹽水區': 16, '學甲區': 16, '六甲區': 15, '玉井區': 14, '白河/後壁/東山/下營/山上': 12, '將軍區': 11, '七股區': 11, '龍崎/北門/左鎮/大內/楠西/南化': 8 } },
-                'Kaohsiung': { 'luxury_price': 3000, 'luxury_unit': 50, 'districts': { '左營區': 38, '鼓山區': 38, '三民區': 38, '前金區': 37, '新興區': 36, '前鎮區': 36, '苓雅區': 35, '楠梓區': 33, '小港區': 33, '鳳山區': 31, '橋頭區': 27, '仁武區': 27, '岡山區': 26, '鳥松區': 26, '鹽埕區': 26, '路竹區': 25, '燕巢區': 21, '大社區': 21, '大樹/梓官/大寮/旗津': 20, '湖內區': 18, '林園區': 17, '美濃區': 16, '阿蓮區': 16, '茄萣區': 15, '旗山/永安/彌陀': 13, '田寮/甲仙/六龜/桃源/茂林等偏鄉': 8 } },
-                'OtherCity': { 'luxury_price': 2200, 'luxury_unit': 35, 'districts': { '新竹縣竹北市': 42, '新竹市': 32, '嘉義市': 25, '基隆市': 24, '嘉義縣太保市': 23, '屏東市': 22, '竹南/朴子': 21, '苗栗頭份': 20, '彰化/南投/斗六': 19, '員林/宜蘭/臺東/其他18%鄉鎮': 18, '花蓮/其他17%鄉鎮': 17, '苗栗/其他16%鄉鎮': 16, '馬公/其他15%鄉鎮': 15, '礁溪/頭城/其他14%鄉鎮': 14, '吉安/其他13%鄉鎮': 13, '蘇澳/其他12%鄉鎮': 12, '其他11%鄉鎮': 11, '其他10%鄉鎮': 10, '其他9%鄉鎮': 9, '其餘一般偏鄉': 8 } }
+                'Taipei': { 'luxury_price': 6000, 'luxury_unit': 120, 'districts': { '大安區': 50, '其他': 48 } },
+                'NewTaipei': { 'luxury_price': 4000, 'luxury_unit': 75, 'districts': { '板橋區': 47, '其他': 40 } },
+                'OtherCity': { 'luxury_price': 2200, 'luxury_unit': 35, 'districts': { '一般': 20 } }
             };
 
             const predecessorAcquireDate = ref(''); 
@@ -503,7 +663,6 @@
             });
             const isOldSystem = computed(() => eraStatus.value === 'old_pre_2012' || eraStatus.value === 'old_post_2012');
 
-            // 舊制專用
             const oldSystemMode = ref('standard');
             const oldCity = ref('');
             const oldDistrictRate = ref(0);
@@ -511,28 +670,15 @@
             const oldHouseValue = ref(null);
             const oldLandArea = ref(null);
             const oldLandPricePerSqm = ref(null);
-            const taxBillAmount = ref(null);
-            const reverseTaxRate = ref(0.012);
-            const showReverseCalc = ref(false);
 
-            const availableDistricts = computed(() => oldCity.value ? taxData[oldCity.value].districts : {});
+            const availableDistricts = computed(() => oldCity.value ? taxData[oldCity.value]?.districts || {'預設': 20} : {});
             watch(oldCity, () => { oldDistrictRate.value = 0; });
 
             const isLuxury = computed(() => {
-                if (!sellPrice.value || !oldCity.value) return false;
+                if (!sellPrice.value || !oldCity.value || !taxData[oldCity.value]) return false;
                 const sp = sellPrice.value;
                 const cityData = taxData[oldCity.value];
-                if(sp >= cityData.luxury_price) return true;
-                if(oldAreaPing.value && (sp / oldAreaPing.value) >= cityData.luxury_unit) return true;
-                return false;
-            });
-
-            const luxuryReason = computed(() => {
-                if(!isLuxury.value) return "";
-                const sp = sellPrice.value;
-                const cityData = taxData[oldCity.value];
-                if(sp >= cityData.luxury_price) return `總價 ≧ ${cityData.luxury_price}萬`;
-                return `單價 ≧ ${cityData.luxury_unit}萬/坪`;
+                return sp >= cityData.luxury_price || (oldAreaPing.value && (sp / oldAreaPing.value) >= cityData.luxury_unit);
             });
 
             const oldLandValue = computed(() => Math.round((oldLandPricePerSqm.value || 0) * (oldLandArea.value || 0)));
@@ -542,13 +688,6 @@
                 return (h + l === 0) ? 0 : h / (h + l);
             });
 
-            const executeReverseCalc = () => {
-                if(taxBillAmount.value && reverseTaxRate.value) {
-                    oldHouseValue.value = Math.round(taxBillAmount.value / reverseTaxRate.value);
-                    showReverseCalc.value = false;
-                }
-            };
-
             const acquireType = ref('buy'); 
             const sellPrice = ref(null); 
             const buyPrice = ref(null);
@@ -557,24 +696,39 @@
             const assumedMortgage = ref(null); 
             const acquireDate = ref(''); 
             const sellDate = ref('');
-            const acquireExpense = ref(null); 
-            const sellExpense = ref('');
+            
+            // 取得與出售資料細項化
+            const acqCosts = reactive({ deedTax: null, stampTax: null, escrowFee: null, agentFee: null, renovation: null });
+            const sellExp = reactive({ brokerRate: 4, agentFee: null, escrowFee: null, otherFees: null }); // 清潔費改其他規費
+            
+            const actualLandTaxWan = ref(null);
+            const payoffMortgageWan = ref(null); 
             const landValueIncrement = ref(null);
             const repurchasePrice = ref(null); 
             const flags = reactive({ isSelfUsed: false, isInvoluntary: false, isRepurchase: false });
 
-            // 🔥 舊制繼承強制核實防護網
-            watch([isOldSystem, acquireType], ([isOld, type]) => {
-                if (isOld && type === 'inherit') {
-                    oldSystemMode.value = 'actual'; 
+            // --- 萬分之三履保費自動聯動 ---
+            watch(buyPrice, (val) => {
+                if(val && typeof val === 'number') {
+                    acqCosts.escrowFee = parseFloat((val * 0.0003).toFixed(4));
+                }
+            });
+            watch(sellPrice, (val) => {
+                if(val && typeof val === 'number') {
+                    sellExp.escrowFee = parseFloat((val * 0.0003).toFixed(4));
                 }
             });
 
-            // 🔥 智慧隱藏邏輯：若為 101.08 以前，預設為買賣
+            const totalAcquireExpense = computed(() => {
+                return (acqCosts.deedTax || 0) + (acqCosts.stampTax || 0) + (acqCosts.escrowFee || 0) + (acqCosts.agentFee || 0) + (acqCosts.renovation || 0);
+            });
+
+            watch([isOldSystem, acquireType], ([isOld, type]) => {
+                if (isOld && type === 'inherit') oldSystemMode.value = 'actual'; 
+            });
+
             watch(eraStatus, (newVal) => {
-                if (newVal === 'old_pre_2012') {
-                    acquireType.value = 'buy';
-                }
+                if (newVal === 'old_pre_2012') acquireType.value = 'buy';
             });
 
             const exclusiveCheck = (checkedKey) => {
@@ -614,6 +768,7 @@
                 const start = new Date(startDt), end = new Date(sellDate.value);
                 return (isNaN(start) || isNaN(end) || end < start) ? 0 : (end - start) / (1000 * 60 * 60 * 24 * 365.25); 
             });
+            
             const holdingPeriodText = computed(() => {
                 if (holdingDuration.value <= 0) return "計算中...";
                 const y = Math.floor(holdingDuration.value);
@@ -625,19 +780,31 @@
             watch(canUseSelfUseExemption, (val) => { if (!val) flags.isSelfUsed = false; });
             watch(() => flags.isRepurchase, (val) => { if(!val) repurchasePrice.value = null; }); 
 
-            const autoSellExpense = computed(() => {
+            // --- 核心：3% 自動擇優扣除額引擎 ---
+            const brokerFeeWan = computed(() => (sellPrice.value || 0) * (sellExp.brokerRate / 100));
+            
+            const totalActualSellExpense = computed(() => {
+                return brokerFeeWan.value + (sellExp.agentFee || 0) + (sellExp.escrowFee || 0) + (sellExp.otherFees || 0);
+            });
+
+            const statutorySellExpense = computed(() => {
                 if (isOldSystem.value) return 0; 
                 return sellPrice.value ? Math.min(sellPrice.value * 0.03, 30) : 0;
             });
-            const finalSellExpense = computed(() => {
-                if (sellExpense.value !== null && sellExpense.value !== '') return Number(sellExpense.value);
-                return isOldSystem.value ? 0 : autoSellExpense.value; 
+            
+            const optimalSellExpense = computed(() => {
+                if (isOldSystem.value) return totalActualSellExpense.value;
+                return Math.max(totalActualSellExpense.value, statutorySellExpense.value);
+            });
+
+            const isUsingStatutory = computed(() => {
+                return !isOldSystem.value && statutorySellExpense.value > totalActualSellExpense.value;
             });
 
             const oldSystemIncomeYuan = computed(() => {
                 if (!isOldSystem.value) return 0;
                 if (oldSystemMode.value === 'actual') {
-                    const profitWan = (sellPrice.value || 0) - (buyPrice.value || 0) - (acquireExpense.value || 0) - finalSellExpense.value;
+                    const profitWan = (sellPrice.value || 0) - (buyPrice.value || 0) - totalAcquireExpense.value - optimalSellExpense.value;
                     return profitWan <= 0 ? 0 : Math.round((profitWan * 10000) * houseLandRatio.value);
                 } else {
                     if (isLuxury.value) return Math.round((sellPrice.value || 0) * 10000 * houseLandRatio.value * 0.20); 
@@ -647,7 +814,7 @@
 
             const profitWan = computed(() => {
                 if (isOldSystem.value) return 0; 
-                let p = (sellPrice.value || 0) - effectiveBuyPrice.value - (acquireExpense.value || 0) - finalSellExpense.value - (landValueIncrement.value || 0);
+                let p = (sellPrice.value || 0) - effectiveBuyPrice.value - totalAcquireExpense.value - optimalSellExpense.value - (landValueIncrement.value || 0);
                 if (p <= 0) return 0;
                 if (flags.isSelfUsed && canUseSelfUseExemption.value) p = p > 400 ? p - 400 : 0;
                 return p;
@@ -667,60 +834,89 @@
             const finalTaxAmountYuan = computed(() => Math.max(baseTaxAmountYuan.value - repurchaseRefundYuan.value, 0));
             const isHighTaxAlert = computed(() => baseTaxAmountYuan.value >= 1000000 && !isOldSystem.value);
 
+            // --- ★ 真實結案日入帳現金流 (不再扣除買價與取得成本) ★ ---
+            const netCashInBankWan = computed(() => {
+                let taxWan = 0;
+                if (isOldSystem.value) {
+                    taxWan = (oldSystemIncomeYuan.value * 0.2) / 10000; 
+                } else {
+                    taxWan = finalTaxAmountYuan.value / 10000;
+                }
+                
+                // 結案日現金 = 賣價 - 當下要付的錢 (仲介/代書/規費) - 實繳土增稅 - 結清房貸尾款 - 房地合一稅
+                return (sellPrice.value || 0) - totalActualSellExpense.value - (actualLandTaxWan.value || 0) - (payoffMortgageWan.value || 0) - taxWan;
+            });
+
             const formatCurrency = (val) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 }).format(val || 0);
-            const formatCurrencyWan = (val) => new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 2 }).format(val || 0) + ' 萬元';
+            const formatCurrencyWan = (val) => new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 4 }).format(val || 0) + ' 萬元';
+
+            const triggerToast = (msg, icon, color) => {
+                toastMessage.value = msg;
+                toastIcon.value = icon;
+                toastColor.value = color;
+                showToast.value = true;
+                setTimeout(() => { showToast.value = false; }, 2000);
+            };
+
+            const downloadJPG = async () => {
+                const element = document.getElementById('tax-report-card');
+                if(!element) return;
+                triggerToast('圖卡生成中，請稍候...', 'fa-solid fa-spinner fa-spin', '#d97706');
+                try {
+                    // 提升畫質，並確保背景正確渲染
+                    const canvas = await html2canvas(element, { 
+                        scale: 3, 
+                        backgroundColor: '#0B132B', 
+                        ignoreElements: (node) => node.hasAttribute("data-html2canvas-ignore"),
+                        useCORS: true
+                    });
+                    const link = document.createElement('a');
+                    link.download = `宏國易丞_現金流精算圖卡_${new Date().getTime()}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 1.0);
+                    link.click();
+                    setTimeout(() => triggerToast('圖卡已成功下載！', 'fa-solid fa-circle-check', '#10B981'), 500);
+                } catch (error) {
+                    triggerToast('產出失敗，請重試', 'fa-solid fa-circle-xmark', '#ef4444');
+                }
+            };
 
             const generateAndCopyReport = () => {
-                let report = `【宏國/易丞地政 稅務諮詢單】\n`;
+                let report = `【宏國/易丞地政 真實結案入帳現金流】\n`;
                 report += `────────────────\n`;
+                report += `💰 預估售出：${sellPrice.value || 0} 萬元\n`;
+                
+                if (payoffMortgageWan.value > 0) {
+                    report += `🏦 扣除房貸尾款：${payoffMortgageWan.value} 萬元\n`;
+                }
                 
                 if (isOldSystem.value) {
-                    report += `📌 適用法規：舊制 (財產交易所得稅)\n`;
-                    report += `🏠 取得方式：${acquireType.value === 'buy' ? '一般買賣' : '繼承/贈與'}\n`;
-                    report += `💰 預估售價：${sellPrice.value || 0} 萬元\n`;
-                    if (isLuxury.value) report += `⚠️ 特殊狀況：已觸發豪宅門檻 (強制20%)\n`;
-                    report += `────────────────\n`;
-                    report += `🔥 需併入所得之財交額：${formatCurrency(oldSystemIncomeYuan.value)}\n`;
+                    report += `📌 法規：舊制\n`;
+                    report += `🔥 預估財產交易所得稅：${(oldSystemIncomeYuan.value * 0.2 / 10000).toFixed(2)} 萬 (依20%粗估)\n`;
                 } else {
-                    report += `📌 適用法規：房地合一稅 2.0 (新制)\n`;
-                    report += `🏠 取得方式：${acquireType.value === 'buy' ? '一般買賣' : '繼承/贈與'}\n`;
-                    report += `⏳ 持有期間：${holdingPeriodText.value}\n`;
-                    report += `💰 預估售價：${sellPrice.value || 0} 萬元\n`;
-                    
-                    if (acquireType.value === 'inherit') {
-                        report += `🛡️ 代書還原成本：${effectiveBuyPrice.value} 萬元\n`;
-                    }
-                    
-                    let specialFlags = [];
-                    if (flags.isSelfUsed) specialFlags.push("自用滿6年");
-                    if (flags.isInvoluntary) specialFlags.push("非自願出售");
-                    if (flags.isRepurchase) specialFlags.push(`重購退稅 (新屋${repurchasePrice.value}萬)`);
-                    
-                    if (specialFlags.length > 0) {
-                        report += `🎯 使用節稅大絕：${specialFlags.join(', ')}\n`;
-                    }
-                    report += `📊 適用稅率：${taxRate.value}%\n`;
-                    report += `────────────────\n`;
-                    report += `🔥 最終預估稅金：${formatCurrency(finalTaxAmountYuan.value)}\n`;
+                    report += `📌 法規：房地合一 2.0\n`;
+                    report += `🔥 預估房地合一稅金：${(finalTaxAmountYuan.value / 10000).toFixed(2)} 萬\n`;
                 }
                 
                 report += `────────────────\n`;
-                report += `💡 代書您好，這是我用系統算出來的報告，麻煩幫我評估後續節稅規劃！`;
+                report += `💸 結案日真實入帳現金：${formatCurrencyWan(netCashInBankWan.value)}\n`;
+                report += `(已扣除實際仲介代書費、土增稅與尾款)\n`;
+                report += `────────────────\n`;
+                report += `💡 代書您好，這是我用系統算出來的報告！`;
 
                 navigator.clipboard.writeText(report).then(() => {
-                    showToast.value = true;
-                    setTimeout(() => { showToast.value = false; window.location.href = officialLineUrl; }, 1800);
+                    triggerToast('報告已複製！正跳轉 LINE...', 'fa-solid fa-circle-check', '#10B981');
+                    setTimeout(() => { window.location.href = officialLineUrl; }, 1800);
                 }).catch(err => { window.location.href = officialLineUrl; });
             };
 
             return {
                 isUnlocked, errorMessage, loginWithLine, predecessorAcquireDate, eraStatus, isOldSystem,
-                oldSystemMode, oldCity, oldDistrictRate, oldAreaPing, oldHouseValue, oldLandArea, oldLandPricePerSqm, oldLandValue, availableDistricts, taxBillAmount, reverseTaxRate, showReverseCalc, executeReverseCalc, isLuxury, luxuryReason, houseLandRatio, oldSystemIncomeYuan,
+                oldSystemMode, oldCity, oldDistrictRate, oldAreaPing, oldHouseValue, oldLandArea, oldLandPricePerSqm, oldLandValue, availableDistricts, isLuxury, houseLandRatio, oldSystemIncomeYuan,
                 acquireType, sellPrice, buyPrice, assessedValue, cpiRate, assumedMortgage, effectiveBuyPrice,
-                acquireDate, sellDate, acquireExpense, sellExpense, autoSellExpense, finalSellExpense, landValueIncrement, repurchasePrice, 
+                acquireDate, sellDate, acqCosts, sellExp, landValueIncrement, repurchasePrice, actualLandTaxWan, payoffMortgageWan, brokerFeeWan, totalActualSellExpense, totalAcquireExpense, statutorySellExpense, optimalSellExpense, isUsingStatutory, netCashInBankWan,
                 flags, exclusiveCheck, canUseSelfUseExemption, holdingDuration, holdingPeriodText, isValid, taxRate, baseTaxAmountYuan,
                 repurchaseRefundYuan, finalTaxAmountYuan, isHighTaxAlert, formatCurrency, formatCurrencyWan,
-                generateAndCopyReport, showToast
+                generateAndCopyReport, downloadJPG, showToast, toastMessage, toastIcon, toastColor
             };
         }
     }).mount('#app');
