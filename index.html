@@ -193,8 +193,29 @@
 
 .profit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 10px}.profit-grid>div{background:#ffffff08;border:1px solid #ffffff26;border-radius:12px;padding:16px 12px}.profit-grid span{display:block;font-size:14px;color:#e2e8f0}.profit-grid strong{display:block;margin-top:8px;font-size:clamp(21px,2.5vw,29px);color:#e2e8f0}.profit-grid .profit-loss strong{color:#fda4af}.profit-grid .profit-gain strong{color:#6ee7b7}.profit-note{font-size:12px;line-height:1.7;color:#cbd5e1;margin:8px 0 14px}.profit-grid>div{min-width:0;overflow-wrap:anywhere}@media(max-width:420px){.profit-grid strong{font-size:23px}.profit-grid span{font-size:12px}.profit-grid>div{padding:14px 10px}}
 </style>
+    <link rel="stylesheet" href="brand-shell.css">
+    <link rel="stylesheet" href="tool-ui.css">
 </head>
-<body class="p-3 md:p-6 lg:p-8">
+<body class="property-tool">
+
+<header class="hg-global">
+    <div class="hg-global-top">
+        <a class="hg-global-brand" href="https://homegoestate.github.io/" target="_blank" rel="noopener noreferrer" aria-label="宏國・易丞公司官網，另開分頁">
+            <span class="hg-global-mark" aria-hidden="true">HG</span>
+            <span><strong>宏國・易丞</strong><small>不動產安心服務</small></span>
+        </a>
+        <nav class="hg-global-actions" aria-label="品牌服務導覽">
+            <a href="https://homegoestate.github.io/anxin-city/" target="_blank" rel="noopener noreferrer">回安心城</a>
+            <a href="https://homegoestate.github.io/" target="_blank" rel="noopener noreferrer">公司官網</a>
+            <a href="https://line.me/R/ti/p/%40604gpqef" target="_blank" rel="noopener noreferrer">官方 LINE</a>
+        </nav>
+    </div>
+    <nav class="hg-tool-nav" aria-label="不動產試算工具">
+        <a href="https://yangceo-taiwan.github.io/loan-forecast/" target="_blank" rel="noopener noreferrer">房貸規劃</a>
+        <a href="https://homegoestate.github.io/test-Property-tax/" target="_blank" rel="noopener noreferrer" aria-current="page">賣屋實拿</a>
+        <a href="https://yangceo-taiwan.github.io/inheritance-tax-issues/" target="_blank" rel="noopener noreferrer">傳承稅務</a>
+    </nav>
+</header>
 
 <div class="bg-mesh"></div><div class="bg-orb-1"></div><div class="bg-orb-2"></div>
 
@@ -207,8 +228,8 @@
     </transition>
 
     <transition name="fade">
-        <div v-if="!isUnlocked" class="min-h-screen flex flex-col items-center justify-center p-4 text-white fixed inset-0 z-[9999]" style="background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(15px);">
-            <div class="bg-white text-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md text-center relative overflow-hidden">
+        <div v-if="!isUnlocked" class="hg-auth-gate min-h-screen flex flex-col items-center justify-center p-4 text-white fixed inset-0 z-[9999]" style="background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(15px);">
+            <div class="hg-auth-card bg-white text-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md text-center relative overflow-hidden">
                 <div class="absolute -top-20 -right-20 w-40 h-40 bg-green-100 rounded-full blur-2xl opacity-80"></div>
                 <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-100 rounded-full blur-2xl opacity-80"></div>
 
@@ -288,39 +309,63 @@
                     <p class="mt-5 text-[10px] text-slate-400 font-bold leading-relaxed">
                         驗證僅用於確認官方好友資格，不會公開您的試算內容。
                     </p>
+                    <nav class="hg-gate-links" aria-label="其他服務入口">
+                        <a href="https://homegoestate.github.io/anxin-city/" target="_blank" rel="noopener noreferrer">回安心城</a>
+                        <a href="https://homegoestate.github.io/" target="_blank" rel="noopener noreferrer">公司官網</a>
+                    </nav>
                 </div>
             </div>
         </div>
     </transition>
 
 <div v-if="isUnlocked" class="tax-shell">
-<header class="tax-header"><div><div class="brand-line">宏國地政 <span>｜</span> 易丞地政</div><h1>賣屋實拿，快速試算</h1></div><button class="reset-button" @click="reset">清空重算</button></header>
-<nav class="purpose" aria-label="試算目的"><button :class="{selected:purpose==='tax'}" @click="purpose='tax'">知道售價，算實拿</button><button :class="{selected:purpose==='net'}" @click="purpose='net'">知道實拿，回推售價</button></nav>
+<header class="tax-header">
+    <div class="tool-heading">
+        <div class="brand-line">賣屋規劃工具 <span>｜</span> 宏國・易丞</div>
+        <h1>賣掉之後，<br class="mobile-break">能實際留下多少？</h1>
+        <p class="tool-lead">從售價、費用與貸款，看清楚預估實拿；也能用希望留下的金額，回推參考售價。</p>
+    </div>
+    <button class="reset-button" @click="reset">清空重算</button>
+</header>
+<div class="tool-journey">
+    <nav aria-label="使用路徑"><span>安心城練習</span><span aria-hidden="true">→</span><strong>用自己的條件試算</strong><span aria-hidden="true">→</span><a href="https://line.me/R/ti/p/%40604gpqef" target="_blank" rel="noopener noreferrer">帶著問題回 LINE</a></nav>
+    <p>遊戲數字不會自動套入本工具；請填入自己的交易資料。</p>
+</div>
+<section class="purpose-section" aria-label="選擇試算方向">
+    <h2>你想先知道哪一件事？</h2>
+    <nav class="purpose" aria-label="試算目的"><button :class="{selected:purpose==='tax'}" @click="purpose='tax'"><span class="purpose-title">知道售價，算實拿</span><small>已有預計售價，看看扣除後能留下多少</small></button><button :class="{selected:purpose==='net'}" @click="purpose='net'"><span class="purpose-title">知道實拿，回推售價</span><small>先填希望留下的金額，再看參考售價</small></button></nav>
+</section>
 <div class="workspace"><div class="input-column">
-<section class="panel" id="basic"><h2><b>1</b>{{purpose==='net'?'想實拿多少？':'這次預計賣多少？'}}</h2><div class="fields">
-<label>標的類型<select v-model="s.property"><option value="existing">成屋與基地</option><option value="land">土地</option><option value="presale">預售屋換約</option></select></label>
-<label>取得方式<select v-model="s.acquisition"><option value="buy">買賣取得</option><option value="inherit">繼承</option><option value="gift">一般贈與</option><option value="spouse">配偶贈與</option></select></label>
+<section class="panel" id="basic"><h2><b>1</b>{{purpose==='net'?'想實拿多少？':'這次預計賣多少？'}}</h2>
+<p class="section-intro">先確認房地與取得方式，再填入日期和金額。</p>
+<h3 class="field-group-title">房地與取得方式</h3><div class="fields">
+<label>這次準備出售的是？<select v-model="s.property"><option value="existing">成屋與基地</option><option value="land">土地</option><option value="presale">預售屋換約</option></select></label>
+<label>當初如何取得？<select v-model="s.acquisition"><option value="buy">買賣取得</option><option value="inherit">繼承</option><option value="gift">一般贈與</option><option value="spouse">配偶贈與</option></select></label>
+</div>
+<h3 class="field-group-title">取得與預計出售日期</h3><div class="fields">
 <label>{{s.acquisition==='inherit'?'繼承日期':s.property==='presale'?'原預售契約日期':'取得日期'}}<input id="acquire-date" type="date" v-model="s.acquireDate"></label>
 <label>{{s.property==='presale'?'預計換約日期':'預計出售登記日期'}}<input id="sale-date" type="date" v-model="s.saleDate"></label>
 <template v-if="s.acquisition==='spouse'"><label>配偶原取得方式<select v-model="s.spouseSource"><option value="buy">買賣</option><option value="inherit">繼承</option><option value="gift">贈與</option></select></label><label>配偶原取得日<input type="date" v-model="s.spouseAcquireDate"></label></template>
 <label v-if="info.underlying==='inherit'">被繼承人原取得日<input type="date" v-model="s.predecessorDate"></label>
 </div>
 <p v-if="s.acquireDate" class="regime-line">{{old?'舊制｜實拿不扣綜所稅':'房地合一2.0'}} · 持有 {{holdingText}}</p>
+<h3 class="field-group-title">本次金額與原始投入</h3>
 <div class="fields main-amounts" >
 <num-field v-if="purpose==='tax'" :label="s.property==='presale'?'預計換約收款':'預計成交價'" v-model="s.price" id="price"></num-field>
 <num-field v-else label="希望實拿金額" v-model="targetNet" id="target-net" :hint="old?'不含個人綜所稅':'已扣本次預留所得稅'"></num-field>
 <num-field v-if="info.underlying==='buy'" :label="s.property==='presale'?'已付建商工程款':'原始買價'" v-model="s.buyPrice" id="buy-price"></num-field>
 <num-field v-else-if="!old" label="取得時房地現值合計" v-model="s.assessed"></num-field><num-field v-if="info.underlying!=='buy'" label="實際投入本金（損益用）" v-model="s.investmentBasis" hint="不使用繼承／受贈的稅務現值"></num-field>
-</div><p class="muted">不知道的費用可留白，先看預估；未提供項目會列在圖卡上。</p>
+</div><p class="muted input-hint">金額依欄位單位填寫。不確定的費用可先留白，結果會列出尚未提供項目。</p>
 <template v-if="old"><div class="old-guide"><strong>舊制申報提示</strong><p>{{oldGuide}}</p><small>是否核實仍依可查得的成交及成本資料判斷。</small></div></template>
 </section>
-<section class="panel" id="deductions"><h2><b>2</b>扣掉費用與貸款</h2><div class="fields">
+<section class="panel" id="deductions"><h2><b>2</b>補上費用與貸款</h2><p class="section-intro">填入本次出售支出與貸款結清金額；沒有資料的項目，可先留白再確認。</p><h3 class="field-group-title">先填常見支出</h3><div class="fields">
 <num-field label="服務費率" unit="%" v-model="s.brokerRate" id="broker-rate" hint="預設成交價4%，可直接修改"></num-field>
 <num-field v-if="s.property==='presale'" label="預售成交總價（服務費基準）" v-model="s.presaleTotal"></num-field>
 <num-field v-if="s.property!=='presale'" label="尚欠房貸／結清金額" v-model="s.payoff" id="payoff"></num-field>
 <num-field v-if="s.property!=='presale'" label="土地增值稅" v-model="s.landTax" id="land-tax"></num-field>
 <num-field label="出售代書費／換約費" v-model="s.sellAgent"></num-field>
 </div>
+<div class="optional-guide"><strong>依情況補充</strong><p>有其他成本、扣除額或特殊取得情況，再展開對應項目。</p></div>
 <details class="subsection"><summary>其他費用與取得成本 <span>選填</span></summary><div class="fields"><num-field v-for="f in applicableCostFields" :key="f.key" :label="f.label" v-model="s[f.key]"></num-field><num-field label="其他出售費用" v-model="s.otherSell"></num-field><num-field label="其他投入：持有利息／稅費等" v-model="s.investmentExtra" id="investment-extra" hint="只算損益，不自動抵稅；勿重複已填成本"></num-field></div>
 <label class="check"><input type="checkbox" v-model="s.sellEscrowAuto">履保費自動估算（收款萬分之三）</label><num-field v-if="!s.sellEscrowAuto" label="出售履保費" v-model="s.sellEscrow"></num-field></details>
 <details v-if="!old" class="subsection"><summary>稅務扣除與優惠 <span>選填</span></summary><label>出售費用扣除方式<select v-model="s.expenseMode"><option value="statutory">費用未備齊：按3%，上限30萬估算</option><option value="actual">使用已輸入的合格出售費用</option></select></label>
@@ -333,12 +378,12 @@
 <div v-if="info.underlying!=='buy'" class="fields"><num-field label="取得時房屋評定現值" v-model="s.acquireHouseValue"></num-field><num-field label="房屋成交收入占比" unit="%" v-model="s.oldHouseRatio"></num-field><num-field label="房屋可扣費用" v-model="s.oldHouseExpense"></num-field><num-field label="房屋額外繼承負擔" v-model="s.oldHouseMortgageExtra"></num-field></div></details>
 <details class="subsection"><summary>身分與特殊取得 <span>一般買賣免填</span></summary><label>納稅身分<select v-model="s.residency"><option value="resident">境內居住個人</option><option value="nonresident">非境內居住個人</option></select></label><num-field v-if="info.underlying!=='buy'" label="CPI調整漲幅" unit="%" :min="-99.99" v-model="s.cpi"></num-field><template v-if="info.underlying==='inherit'&&!old"><label class="check"><input type="checkbox" v-model="s.mortgageExtraEnabled">計入已核對的繼承額外房貸負擔</label><num-field v-if="s.mortgageExtraEnabled" label="可額外扣除的繼承負擔" v-model="s.mortgageExtra"></num-field></template><label class="check" v-if="info.underlying==='inherit'&&info.origin>='2016-01-01'&&s.predecessorDate<'2016-01-01'"><input type="checkbox" v-model="s.inheritElectNew">符合自住要件，選擇新制試算</label></details>
 </section>
-<div class="actions"><button class="primary calculate-button" id="calculate" @click="submit">{{purpose==='net'?'回推參考售價':'算出預估實拿'}}</button></div>
+<div class="actions calculate-actions"><button class="primary calculate-button" id="calculate" @click="submit">{{purpose==='net'?'回推參考售價':'算出預估實拿'}}</button><p>結果會列出已扣款項與未提供資料，方便逐項核對。</p></div>
 <div v-if="errors.length" class="error-box" role="alert"><strong>這些資料需要修正</strong><ul><li v-for="e in errors">{{e}}</li></ul></div>
-<details class="panel examples"><summary>看範例／查法規依據</summary><div class="example-buttons"><button @click="example('normal')">一般買賣</button><button @click="example('self')">自住重購</button><button @click="example('old')">舊制</button><button @click="example('inherit')">繼承</button></div><p class="muted">範例為虛構資料；真實個案請先「清空重算」。適用個人110/07/01後交易，特殊免稅、都更合建等另案核算。</p><ul class="source-links"><li v-for="link in sources"><a :href="link.url" target="_blank" rel="noopener noreferrer">{{link.label}}</a></li></ul></details>
+<details class="panel examples"><summary>先看範例，或查看計算依據</summary><div class="example-buttons"><button @click="example('normal')">一般買賣</button><button @click="example('self')">自住重購</button><button @click="example('old')">舊制</button><button @click="example('inherit')">繼承</button></div><p class="muted">範例為虛構資料；真實個案請先「清空重算」。適用個人110/07/01後交易，特殊免稅、都更合建等另案核算。</p><ul class="source-links"><li v-for="link in sources"><a :href="link.url" target="_blank" rel="noopener noreferrer">{{link.label}}</a></li></ul></details>
 </div>
 <aside class="result-column" aria-live="polite">
-<div v-if="!result" class="panel empty"><span class="small-cap">{{purpose==='net'?'參考售價':'預估實拿'}}</span><h2>{{purpose==='net'?'填目標，不必先填售價':'填基本資料，就能先估'}}</h2><p>費用可以之後再補；結果會註記未提供項目。</p><div class="empty-example">{{purpose==='net'?'希望實拿 → 回推售價 → 代回驗算':'售價 − 費用 − 貸款 − 本次預留稅款'}}</div><p class="muted">舊制不計算客戶綜所稅，交割實拿另行標註。</p></div>
+<div v-if="!result" class="panel empty"><span class="small-cap">{{purpose==='net'?'參考售價':'預估實拿'}}</span><h2>{{purpose==='net'?'填目標，不必先填售價':'填基本資料，就能先估'}}</h2><p>費用可以之後再補；結果會註記未提供項目。</p><div class="empty-example">{{purpose==='net'?'希望實拿 → 回推售價 → 代回驗算':'售價 − 費用 − 貸款 − 本次預留稅款'}}</div><ol class="result-checklist"><li><span>01</span><div><strong>先看預估實拿</strong><p>把成交金額與能留下的現金分開看。</p></div></li><li><span>02</span><div><strong>再核對扣除款項</strong><p>逐項確認費用、貸款與預留稅款。</p></div></li><li><span>03</span><div><strong>最後補齊資料</strong><p>依結果註記，找出還需要確認的項目。</p></div></li></ol><p class="muted">舊制不計算客戶綜所稅，交割實拿另行標註。</p></div>
 <template v-else>
 <p v-if="stale" class="muted">正在依新資料更新…</p>
 <div v-if="purpose==='net'" class="reverse-result"><span>要實拿 {{money(targetNet)}} 萬，參考售價</span><strong id="reverse-price">{{money(result.price)}} <small>萬元</small></strong><p>{{reverseMessage}}</p></div>
@@ -361,7 +406,14 @@
 <div class="report-footer">{{generatedAt}} ｜ {{version}}<br>規則查核115/09/16；詳細官方依據見頁面連結。</div>
 </div></div>
 <div class="export-actions"><button class="gold" @click="downloadJPG">下載預估圖卡</button><button @click="copyReport">複製報告文字</button><button @click="openOfficialLine">官方LINE</button></div><p class="muted" role="status">{{exportMessage}}</p><textarea v-if="copyFallback" readonly :value="copyFallback" rows="10" aria-label="手動複製報告"></textarea>
-</template></aside></div></div>
+</template>
+<section class="result-next-step">
+    <span class="small-cap">帶著問題，往下一步</span>
+    <h3>把試算結果與不確定的地方，一起帶回 LINE</h3>
+    <p>可先準備房地類型、取得與出售日期，以及還沒確認的費用或資格。完成試算後，也能用上方按鈕複製文字或下載圖卡。</p>
+    <a href="https://line.me/R/ti/p/%40604gpqef" target="_blank" rel="noopener noreferrer">到官方 LINE 討論 <span aria-hidden="true">↗</span></a>
+</section>
+</aside></div></div>
 
 </div>
 <script>
